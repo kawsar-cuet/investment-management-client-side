@@ -1,0 +1,178 @@
+<div class="register-container">
+  <div class="register-card">
+    <!-- Header -->
+    <div class="register-header">
+      <div class="logo-circle">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+        </svg>
+      </div>
+      <h1>Create Account</h1>
+      <p>Join our investment management platform</p>
+    </div>
+
+    <!-- Body -->
+    <div class="register-body">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Success Alert -->
+        <div *ngIf="success" class="success-alert">
+          {{ success }}
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="error" class="error-alert">
+          {{ error }}
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+          <label for="username">Username <span class="required">*</span></label>
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            class="form-input"
+            [class.error]="f['username'].invalid && f['username'].touched"
+            placeholder="Choose a username"
+          />
+          <div *ngIf="f['username'].invalid && f['username'].touched" class="error-message">
+            <span *ngIf="f['username'].errors?.['required']">Username is required</span>
+            <span *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters</span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-input"
+            [class.error]="f['email'].invalid && f['email'].touched"
+            placeholder="your.email@example.com"
+          />
+          <div *ngIf="f['email'].invalid && f['email'].touched" class="error-message">
+            <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+            <span *ngIf="f['email'].errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="fullName">Full Name <span class="required">*</span></label>
+          <input
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            class="form-input"
+            [class.error]="f['fullName'].invalid && f['fullName'].touched"
+            placeholder="Enter your full name"
+          />
+          <div *ngIf="f['fullName'].invalid && f['fullName'].touched" class="error-message">
+            Full name is required
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password <span class="required">*</span></label>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              class="form-input"
+              [class.error]="f['password'].invalid && f['password'].touched"
+              placeholder="Create a password"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="hidePassword = !hidePassword"
+            >
+              <svg *ngIf="hidePassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              <svg *ngIf="!hidePassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="f['password'].invalid && f['password'].touched" class="error-message">
+            <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+            <span *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+          <div class="password-wrapper">
+            <input
+              id="confirmPassword"
+              [type]="hideConfirmPassword ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              class="form-input"
+              [class.error]="(f['confirmPassword'].invalid && f['confirmPassword'].touched) || registerForm.errors?.['passwordMismatch']"
+              placeholder="Confirm your password"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="hideConfirmPassword = !hideConfirmPassword"
+            >
+              <svg *ngIf="hideConfirmPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              <svg *ngIf="!hideConfirmPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="(f['confirmPassword'].invalid && f['confirmPassword'].touched) || registerForm.errors?.['passwordMismatch']" class="error-message">
+            <span *ngIf="f['confirmPassword'].errors?.['required']">Please confirm your password</span>
+            <span *ngIf="registerForm.errors?.['passwordMismatch'] && !f['confirmPassword'].errors?.['required']">Passwords do not match</span>
+          </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="checkbox-group">
+          <input
+            id="terms"
+            type="checkbox"
+            formControlName="terms"
+          />
+          <label for="terms">
+            I agree to the <a href="#" class="terms-link">Terms and Conditions</a> <span class="required">*</span>
+          </label>
+        </div>
+        <div *ngIf="f['terms'].invalid && f['terms'].touched" class="error-message">
+          You must accept the terms and conditions
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" [disabled]="loading || registerForm.invalid">
+          <span *ngIf="loading" class="loading-spinner"></span>
+          <span>{{ loading ? 'Creating account...' : 'Create Account' }}</span>
+        </button>
+      </form>
+
+      <!-- Sign In Link -->
+      <div class="signin-section">
+        <p>
+          Already have an account? 
+          <a routerLink="/auth/login" class="signin-link">Sign in here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    © 2026 Investment Management Platform. All rights reserved.
+  </div>
+</div>

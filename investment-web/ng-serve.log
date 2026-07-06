@@ -1,0 +1,32 @@
+Warning: This is a simple server for use in testing or debugging Angular applications
+locally. It hasn't been reviewed for security issues.
+
+Binding this server to an open connection can result in compromising your application or
+computer. Using a different host than the one passed to the "--host" flag might result in
+websocket connection issues. You might need to use "--disable-host-check" if that's the
+case.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files   | Names         |  Raw Size
+vendor.js             | vendor        |   2.57 MB |
+main.js               | main          | 383.76 kB |
+styles.css, styles.js | styles        | 274.53 kB |
+polyfills.js          | polyfills     | 234.36 kB |
+runtime.js            | runtime       |   6.50 kB |
+
+| Initial Total |   3.45 MB
+
+Build at: 2026-07-06T17:12:18.282Z - Hash: 9fcafdbd8214316c - Time: 6992ms
+
+./src/app/features/auth/register/register.component.scss?ngResource - Warning: Module Warning (from ./node_modules/postcss-loader/dist/cjs.js):
+Warning
+
+(143:3) autoprefixer: start value has mixed support, consider using flex-start instead
+
+
+
+** Angular Live Development Server is listening on 0.0.0.0:4200, open your browser on http://localhost:4200/ **
+
+
+√ Compiled successfully.
