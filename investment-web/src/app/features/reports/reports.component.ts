@@ -1,9 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DepositService } from '@core/services/deposit.service';
-import { Deposit } from '@core/models';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { FamilyService } from '@core/services/family.service';
+import { ReportsService } from '@core/services/reports.service';
+import {
+  Family,
+  FamilyReportResponse,
+  FamilyReportRow
+} from '@core/models';
 import { extractHttpErrorMessage } from '@core/utils/http-error';
 
+/**
+ * Family-wise summary report page.
+ *
+ * Shows one row per family with a per-member breakdown on demand.
+ * Filters (all optional): year and family.
+ * Default: all families, all years.
+ */
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -12,83 +24,114 @@ import { extractHttpErrorMessage } from '@core/utils/http-error';
 export class ReportsComponent implements OnInit {
   loading = false;
   error = '';
-  total = 0;
-  count = 0;
+  report: FamilyReportResponse | null = null;
+  families: Family[] = [];
 
-  periodForm!: FormGroup;
-  familyTotalForm!: FormGroup;
-  familyTotal: number | string | null = null;
+  // Year options: current year and previous 4 years, plus the "All years" sentinel.
+  readonly yearOptions: (number | null)[];
 
-  deposits: Deposit[] = [];
+  filterForm!: FormGroup;
+
+  // Track which families are expanded (by familyId).
+  expandedFamilies = new Set<string>();
 
   constructor(
     private fb: FormBuilder,
-    private depositService: DepositService
-  ) {}
+    private familyService: FamilyService,
+    private reportsService: ReportsService
+  ) {
+    const currentYear = new Date().getFullYear();
+    const years: number[] = [];
+    for (let y = currentYear; y >= currentYear - 4; y--) {
+      years.push(y);
+    }
+    this.yearOptions = [null, ...years]; // null => "All years"
+  }
 
   ngOnInit(): void {
-    this.periodForm = this.fb.group({
-      month: [new Date().getMonth() + 1, Validators.required],
-      year: [new Date().getFullYear(), Validators.required]
+    this.filterForm = this.fb.group({
+      year: [null],
+      familyId: ['']
     });
-    this.familyTotalForm = this.fb.group({
-      familyId: ['', Validators.required],
-      month: [new Date().getMonth() + 1, Validators.required],
-      year: [new Date().getFullYear(), Validators.required]
+    this.loadFamilies();
+    this.load();
+  }
+
+  /** Fetch the list of families for the family filter dropdown. */
+  loadFamilies(): void {
+    this.familyService.list().subscribe({
+      next: list => (this.families = list ?? []),
+      error: () => (this.families = [])
     });
   }
 
-  runPeriodReport(): void {
-    if (this.periodForm.invalid) return;
-    const { month, year } = this.periodForm.value;
+  /** Run the report with the current filter form values. */
+  load(): void {
+    if (this.filterForm.invalid) return;
+    const { year, familyId } = this.filterForm.value;
     this.loading = true;
     this.error = '';
-    this.depositService.getByPeriod(month, year).subscribe({
-      next: list => {
-        this.deposits = list;
-        this.count = list.length;
-        this.total = list.reduce((acc, d) => acc + (Number(d.amount) || 0), 0);
-        this.loading = false;
-      },
-      error: err => {
-        this.error = extractHttpErrorMessage(err, 'Failed to load deposits');
-        this.loading = false;
-      }
-    });
+    this.reportsService
+      .getFamilySummary({
+        year: year ?? null,
+        familyId: familyId || null
+      })
+      .subscribe({
+        next: r => {
+          this.report = r;
+          // Collapse any expanded rows on a fresh query - their members may no
+          // longer be in the result set.
+          this.expandedFamilies.clear();
+          this.loading = false;
+        },
+        error: err => {
+          this.error = extractHttpErrorMessage(err, 'Failed to load family summary report');
+          this.report = null;
+          this.loading = false;
+        }
+      });
   }
 
-  runFamilyTotalReport(): void {
-    if (this.familyTotalForm.invalid) return;
-    const { familyId, month, year } = this.familyTotalForm.value;
-    this.depositService.getFamilyTotal(familyId, month, year).subscribe({
-      next: total => (this.familyTotal = total),
-      error: () => {
-        this.familyTotal = null;
-        this.error = 'Failed to load family total';
-      }
-    });
+  /** Reset filters to defaults and re-run. */
+  clearFilters(): void {
+    this.filterForm.reset({ year: null, familyId: '' });
+    this.load();
   }
 
-  exportCsv(): void {
-    if (!this.deposits.length) return;
-    const header = ['GUID', 'Amount', 'Member', 'Family', 'Month', 'Year', 'Date', 'Notes'];
-    const rows = this.deposits.map(d => [
-      d.guid,
-      d.amount,
-      d.memberGuid || '',
-      d.familyGuid || '',
-      d.depositMonth || '',
-      d.depositYear || '',
-      d.depositDate || '',
-      (d.notes || '').replace(/,/g, ';')
-    ]);
-    const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `deposits-${this.periodForm.value.month}-${this.periodForm.value.year}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  /** Toggle the expanded state of a family row. */
+  toggleFamily(familyId: string): void {
+    if (this.expandedFamilies.has(familyId)) {
+      this.expandedFamilies.delete(familyId);
+    } else {
+      this.expandedFamilies.add(familyId);
+    }
+  }
+
+  isExpanded(familyId: string): boolean {
+    return this.expandedFamilies.has(familyId);
+  }
+
+  expandAll(): void {
+    if (!this.report) return;
+    this.report.rows.forEach(r => this.expandedFamilies.add(r.familyId));
+  }
+
+  collapseAll(): void {
+    this.expandedFamilies.clear();
+  }
+
+  /** TrackBy helpers for the two *ngFor lists. */
+  trackByFamilyId = (_: number, r: FamilyReportRow) => r.familyId;
+  trackByMemberId = (_: number, m: { memberId: string }) => m.memberId;
+
+  /** Format a numeric amount safely (handles string | number | undefined). */
+  fmt(value: number | string | null | undefined): string {
+    if (value === null || value === undefined) return '-';
+    const n = typeof value === 'string' ? Number(value) : value;
+    if (Number.isNaN(n)) return String(value);
+    return n.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 }
