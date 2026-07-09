@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DashboardService, DashboardStats } from '@core/services/dashboard.service';
+import { AuthService } from '@core/services/auth.service';
 import { DepositSearchResult } from '@core/models';
 import { extractHttpErrorMessage } from '@core/utils/http-error';
 
@@ -11,6 +12,7 @@ import { extractHttpErrorMessage } from '@core/utils/http-error';
 export class DashboardComponent implements OnInit {
   loading = false;
   error = '';
+  isAdmin = false;
   stats: DashboardStats = {
     totalMembers: 0,
     depositsThisMonth: 0,
@@ -25,9 +27,14 @@ export class DashboardComponent implements OnInit {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    const me = this.authService.getCurrentUser();
+    this.isAdmin = (me?.role || '').toUpperCase() === 'ADMIN';
     this.refresh();
   }
 

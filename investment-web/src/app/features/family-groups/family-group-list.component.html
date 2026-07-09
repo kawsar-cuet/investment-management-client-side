@@ -1,65 +1,108 @@
-<div class="p-6">
-  <div class="flex items-center justify-between mb-6">
-    <div>
-      <h1 class="text-2xl font-semibold text-gray-900">Family Groups</h1>
-      <p class="text-sm text-gray-500 mt-1">Browse and manage family groups. Click a row to see details.</p>
+<div class="px-3 py-4 sm:px-6 sm:py-6">
+  <!-- Header -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+    <div class="min-w-0">
+      <h1 class="text-2xl sm:text-3xl font-heading font-bold text-gray-900">Family Groups</h1>
+      <p class="mt-1 text-sm sm:text-base text-gray-600">Browse and manage family groups. Tap a card to see details.</p>
     </div>
-    <button *ngIf="isAdmin" (click)="openCreate()" class="px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 inline-flex items-center">
-      <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button *ngIf="isAdmin"
+            (click)="openCreate()"
+            class="self-start sm:self-auto inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition shadow-sm">
+      <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
       </svg>
       New Family Group
     </button>
   </div>
 
-  <div *ngIf="error" class="p-3 mb-4 rounded bg-red-50 text-red-700 border border-red-200">{{ error }}</div>
-  <div *ngIf="success" class="p-3 mb-4 rounded bg-green-50 text-green-700 border border-green-200">{{ success }}</div>
+  <div *ngIf="error" class="p-3 mb-4 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">{{ error }}</div>
+  <div *ngIf="success" class="p-3 mb-4 rounded-lg bg-green-50 text-green-700 border border-green-200 text-sm">{{ success }}</div>
 
-  <form *ngIf="showCreate" [formGroup]="createForm" (ngSubmit)="create()" class="mb-6 bg-white rounded-lg shadow border border-gray-200 p-4 space-y-3">
+  <!-- Create form -->
+  <form *ngIf="showCreate" [formGroup]="createForm" (ngSubmit)="create()"
+        class="mb-4 sm:mb-6 bg-white rounded-lg shadow border border-gray-200 p-4 space-y-3">
     <div>
       <label class="block text-sm font-medium text-gray-700">Group Name</label>
-      <input formControlName="groupName" type="text" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500" />
+      <input formControlName="groupName" type="text"
+             class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500" />
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700">Description</label>
-      <textarea formControlName="description" rows="2" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500"></textarea>
+      <textarea formControlName="description" rows="2"
+                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500"></textarea>
     </div>
     <div class="flex space-x-2">
-      <button type="submit" [disabled]="createForm.invalid" class="px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 disabled:opacity-50">Create</button>
-      <button type="button" (click)="closeCreate()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200">Cancel</button>
+      <button type="submit" [disabled]="createForm.invalid"
+              class="px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 disabled:opacity-50">Create</button>
+      <button type="button" (click)="closeCreate()"
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200">Cancel</button>
     </div>
   </form>
 
-  <div *ngIf="loading" class="text-gray-600">Loading family groups…</div>
-
-  <div *ngIf="!loading && groups.length === 0" class="bg-white rounded-lg shadow border border-gray-200 p-8 text-center text-gray-500">
-    No family groups yet.
-    <span *ngIf="isAdmin">Use “New Family Group” to create one.</span>
+  <!-- Loading skeletons -->
+  <div *ngIf="loading" class="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div *ngFor="let i of [1,2,3]" class="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-5 animate-pulse">
+      <div class="flex items-center space-x-3">
+        <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gray-200"></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-3 w-2/3 bg-gray-200 rounded"></div>
+          <div class="h-2 w-1/3 bg-gray-100 rounded"></div>
+        </div>
+      </div>
+      <div class="mt-4 space-y-2">
+        <div class="h-2 w-full bg-gray-100 rounded"></div>
+        <div class="h-2 w-4/5 bg-gray-100 rounded"></div>
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="!loading && groups.length > 0" class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group Name</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        <tr *ngFor="let g of groups" (click)="openDetails(g)" class="cursor-pointer hover:bg-gray-50">
-          <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ g.groupName }}</td>
-          <td class="px-4 py-3 text-sm text-gray-600">{{ g.description || '—' }}</td>
-          <td class="px-4 py-3 text-sm">
-            <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full" [ngClass]="{
-              'bg-green-100 text-green-800': g.status === 'ACTIVE',
-              'bg-gray-100 text-gray-700': g.status !== 'ACTIVE'
-            }">{{ g.status || '—' }}</span>
-          </td>
-          <td class="px-4 py-3 text-sm text-gray-600">{{ g.updatedDate ? (g.updatedDate | date:'mediumDate') : '—' }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Empty state -->
+  <div *ngIf="!loading && groups.length === 0"
+       class="bg-white rounded-lg shadow border border-gray-200 p-8 text-center text-gray-500 text-sm">
+    No family groups yet.
+    <span *ngIf="isAdmin">Use "New Family Group" to create one.</span>
+  </div>
+
+  <!-- Card grid -->
+  <div *ngIf="!loading && groups.length > 0"
+       class="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div *ngFor="let g of groups"
+         (click)="openDetails(g)"
+         class="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md hover:border-primary-300 transition cursor-pointer group">
+      <div class="p-4 sm:p-5">
+        <!-- Title row -->
+        <div class="flex items-start space-x-3">
+          <div class="flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary-100 flex items-center justify-center">
+            <span class="text-primary-700 font-semibold text-sm">{{ initials(g.groupName) }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-sm sm:text-base font-semibold text-gray-900 truncate group-hover:text-primary-700">{{ g.groupName }}</h3>
+            <p class="text-xs text-gray-500 mt-0.5">Family group</p>
+          </div>
+          <span class="inline-flex items-center px-2 py-0.5 text-[11px] sm:text-xs font-medium rounded-full flex-shrink-0"
+                [ngClass]="{
+                  'bg-green-100 text-green-800': g.status === 'ACTIVE',
+                  'bg-gray-100 text-gray-700': g.status !== 'ACTIVE'
+                }">
+            {{ g.status || '—' }}
+          </span>
+        </div>
+
+        <!-- Description -->
+        <p *ngIf="g.description" class="mt-3 text-xs sm:text-sm text-gray-600 line-clamp-2">{{ g.description }}</p>
+        <p *ngIf="!g.description" class="mt-3 text-xs sm:text-sm text-gray-400 italic">No description</p>
+
+        <!-- Footer meta -->
+        <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+          <span class="inline-flex items-center">
+            <svg class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ g.updatedDate ? (g.updatedDate | date:'mediumDate') : '—' }}
+          </span>
+          <span class="text-primary-600 group-hover:text-primary-700 font-medium">View →</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

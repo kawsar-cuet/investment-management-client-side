@@ -264,4 +264,16 @@ export class MembersListComponent implements OnInit, OnDestroy {
   openDetails(m: Member): void {
     this.router.navigate(['/members', m.guid]);
   }
+
+  /**
+   * Two-letter avatar label for a list card. Falls back to "M" when the name
+   * is missing so the avatar circle never looks empty.
+   */
+  initials(name: string | undefined | null): string {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return 'M';
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 }

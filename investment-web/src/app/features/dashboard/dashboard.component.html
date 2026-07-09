@@ -1,15 +1,15 @@
-<div class="space-y-6">
+<div class="space-y-5 sm:space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-      <h1 class="text-3xl font-heading font-bold text-gray-900">Dashboard</h1>
-      <p class="mt-2 text-gray-600">Welcome to Investment Management Platform</p>
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div class="min-w-0">
+      <h1 class="text-2xl sm:text-3xl font-heading font-bold text-gray-900">Dashboard</h1>
+      <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Welcome to Investment Management Platform</p>
     </div>
     <button
       type="button"
       (click)="refresh()"
       [disabled]="loading"
-      class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      class="self-start sm:self-auto inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
     >
       <svg class="h-4 w-4 mr-1.5" [class.animate-spin]="loading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -21,7 +21,7 @@
   <!-- Error banner -->
   <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
     <div class="flex">
-      <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+      <svg class="h-5 w-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
       </svg>
       <span class="text-sm">{{ error }}</span>
@@ -29,27 +29,27 @@
   </div>
 
   <!-- Statistics Cards -->
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
     <!-- Total Members Card -->
     <div class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-lg transition">
-      <div class="p-6">
+      <div class="p-4 sm:p-6">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <div class="p-3 bg-primary-100 rounded-lg">
-              <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-2 sm:p-3 bg-primary-100 rounded-lg">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
               </svg>
             </div>
           </div>
-          <div class="ml-5 w-0 flex-1">
+          <div class="ml-4 sm:ml-5 w-0 flex-1 min-w-0">
             <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Members</dt>
+              <dt class="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Members</dt>
               <dd class="flex items-baseline">
                 <ng-container *ngIf="loading; else membersValue">
-                  <div class="h-7 w-12 bg-gray-200 rounded animate-pulse"></div>
+                  <div class="h-6 sm:h-7 w-10 sm:w-12 bg-gray-200 rounded animate-pulse"></div>
                 </ng-container>
                 <ng-template #membersValue>
-                  <div class="text-2xl font-semibold text-gray-900">{{ stats.totalMembers }}</div>
+                  <div class="text-xl sm:text-2xl font-semibold text-gray-900">{{ stats.totalMembers }}</div>
                 </ng-template>
               </dd>
             </dl>
@@ -60,24 +60,24 @@
 
     <!-- Deposits This Month Card -->
     <div class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-lg transition">
-      <div class="p-6">
+      <div class="p-4 sm:p-6">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <div class="p-3 bg-secondary-100 rounded-lg">
-              <svg class="h-6 w-6 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-2 sm:p-3 bg-secondary-100 rounded-lg">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
           </div>
-          <div class="ml-5 w-0 flex-1">
+          <div class="ml-4 sm:ml-5 w-0 flex-1 min-w-0">
             <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Deposits This Month</dt>
+              <dt class="text-xs sm:text-sm font-medium text-gray-500 truncate">This Month</dt>
               <dd>
                 <ng-container *ngIf="loading; else monthValue">
-                  <div class="h-7 w-10 bg-gray-200 rounded animate-pulse"></div>
+                  <div class="h-6 sm:h-7 w-8 sm:w-10 bg-gray-200 rounded animate-pulse"></div>
                 </ng-container>
                 <ng-template #monthValue>
-                  <div class="text-2xl font-semibold text-gray-900">{{ stats.depositsThisMonth }}</div>
+                  <div class="text-xl sm:text-2xl font-semibold text-gray-900">{{ stats.depositsThisMonth }}</div>
                 </ng-template>
               </dd>
             </dl>
@@ -88,24 +88,24 @@
 
     <!-- Total Collected Card -->
     <div class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-lg transition">
-      <div class="p-6">
+      <div class="p-4 sm:p-6">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <div class="p-3 bg-accent-100 rounded-lg">
-              <svg class="h-6 w-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-2 sm:p-3 bg-accent-100 rounded-lg">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
           </div>
-          <div class="ml-5 w-0 flex-1">
+          <div class="ml-4 sm:ml-5 w-0 flex-1 min-w-0">
             <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Collected</dt>
+              <dt class="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Collected</dt>
               <dd>
                 <ng-container *ngIf="loading; else totalValue">
-                  <div class="h-7 w-20 bg-gray-200 rounded animate-pulse"></div>
+                  <div class="h-6 sm:h-7 w-16 sm:w-20 bg-gray-200 rounded animate-pulse"></div>
                 </ng-container>
                 <ng-template #totalValue>
-                  <div class="text-2xl font-semibold text-gray-900 font-mono">{{ fmtAmount(stats.totalCollected) }}৳</div>
+                  <div class="text-lg sm:text-2xl font-semibold text-gray-900 font-mono truncate">{{ fmtAmount(stats.totalCollected) }}৳</div>
                 </ng-template>
               </dd>
             </dl>
@@ -116,25 +116,25 @@
 
     <!-- Pending Card -->
     <div class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-lg transition">
-      <div class="p-6">
+      <div class="p-4 sm:p-6">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <div class="p-3 bg-yellow-100 rounded-lg">
-              <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-2 sm:p-3 bg-yellow-100 rounded-lg">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
           </div>
-          <div class="ml-5 w-0 flex-1">
+          <div class="ml-4 sm:ml-5 w-0 flex-1 min-w-0">
             <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Pending Deposits</dt>
+              <dt class="text-xs sm:text-sm font-medium text-gray-500 truncate">Pending</dt>
               <dd>
                 <ng-container *ngIf="loading; else pendingValue">
-                  <div class="h-7 w-10 bg-gray-200 rounded animate-pulse"></div>
+                  <div class="h-6 sm:h-7 w-8 sm:w-10 bg-gray-200 rounded animate-pulse"></div>
                 </ng-container>
                 <ng-template #pendingValue>
-                  <div class="text-2xl font-semibold text-gray-900">{{ stats.pendingDeposits }}</div>
-                  <p class="text-xs text-gray-500">members pending this month</p>
+                  <div class="text-xl sm:text-2xl font-semibold text-gray-900">{{ stats.pendingDeposits }}</div>
+                  <p class="text-[10px] sm:text-xs text-gray-500 leading-tight">members pending this month</p>
                 </ng-template>
               </dd>
             </dl>
@@ -145,34 +145,34 @@
   </div>
 
   <!-- Quick Actions -->
-  <div class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Quick Actions</h2>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <a routerLink="/deposits"
+  <div class="bg-white shadow-md rounded-lg p-4 sm:p-6">
+    <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 mb-3 sm:mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <a *ngIf="isAdmin" routerLink="/deposits"
          [queryParams]="{ tab: 'single' }"
-         class="flex items-center justify-center px-4 py-3 border border-primary-300 rounded-lg text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 transition">
+         class="flex items-center justify-center px-4 py-3 text-sm font-medium border border-primary-300 rounded-lg text-primary-700 bg-primary-50 hover:bg-primary-100 transition">
         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
         Add Deposit
       </a>
-      <a routerLink="/members"
+      <a *ngIf="isAdmin" routerLink="/members"
          [queryParams]="{ action: 'create' }"
-         class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+         class="flex items-center justify-center px-4 py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
         </svg>
         Add Member
       </a>
       <a routerLink="/reports"
-         class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+         class="flex items-center justify-center px-4 py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
         View Reports
       </a>
       <a routerLink="/settings"
-         class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+         class="flex items-center justify-center px-4 py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition">
         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -183,45 +183,45 @@
   </div>
 
   <!-- Recent Activity -->
-  <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-      <h2 class="text-lg font-heading font-semibold text-gray-900">Recent Deposits</h2>
+  <div class="bg-white shadow-md rounded-lg border border-gray-200">
+    <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900">Recent Deposits</h2>
       <a routerLink="/deposits" class="text-sm font-medium text-primary-600 hover:text-primary-500">
         View all →
       </a>
     </div>
 
     <div *ngIf="loading" class="divide-y divide-gray-200">
-      <div *ngFor="let i of [1,2,3]" class="px-6 py-4">
+      <div *ngFor="let i of [1,2,3]" class="px-4 sm:px-6 py-3 sm:py-4">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="h-10 w-10 rounded-full bg-gray-200 animate-pulse"></div>
-            <div class="space-y-2">
-              <div class="h-3 w-32 bg-gray-200 rounded animate-pulse"></div>
-              <div class="h-2 w-20 bg-gray-100 rounded animate-pulse"></div>
+          <div class="flex items-center space-x-3 min-w-0">
+            <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-gray-200 animate-pulse flex-shrink-0"></div>
+            <div class="space-y-2 min-w-0">
+              <div class="h-3 w-24 sm:w-32 bg-gray-200 rounded animate-pulse"></div>
+              <div class="h-2 w-16 sm:w-20 bg-gray-100 rounded animate-pulse"></div>
             </div>
           </div>
-          <div class="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+          <div class="h-4 w-12 sm:w-16 bg-gray-200 rounded animate-pulse flex-shrink-0"></div>
         </div>
       </div>
     </div>
 
     <div *ngIf="!loading && stats.recentDeposits.length > 0" class="divide-y divide-gray-200">
-      <div *ngFor="let row of stats.recentDeposits" class="px-6 py-4 hover:bg-gray-50 transition">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-              <span class="text-primary-700 font-medium">{{ initials(row.memberName) }}</span>
+      <div *ngFor="let row of stats.recentDeposits" class="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 transition">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center space-x-3 min-w-0">
+            <div class="flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary-100 flex items-center justify-center">
+              <span class="text-primary-700 font-medium text-sm">{{ initials(row.memberName) }}</span>
             </div>
-            <div>
-              <p class="text-sm font-medium text-gray-900">{{ row.memberName || 'Unknown member' }}</p>
-              <p class="text-xs text-gray-500">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-900 truncate">{{ row.memberName || 'Unknown member' }}</p>
+              <p class="text-xs text-gray-500 truncate">
                 {{ row.familyName || '—' }} · {{ formatRecentDate(row) }}
               </p>
             </div>
           </div>
-          <div class="text-right">
-            <p class="text-sm font-semibold text-gray-900 font-mono">{{ fmtAmount(row.amount) }}৳</p>
+          <div class="text-right flex-shrink-0">
+            <p class="text-sm font-semibold text-gray-900 font-mono whitespace-nowrap">{{ fmtAmount(row.amount) }}৳</p>
             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
               Paid
             </span>
@@ -230,7 +230,7 @@
       </div>
     </div>
 
-    <div *ngIf="!loading && stats.recentDeposits.length === 0" class="px-6 py-12 text-center">
+    <div *ngIf="!loading && stats.recentDeposits.length === 0" class="px-4 sm:px-6 py-8 sm:py-12 text-center">
       <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>

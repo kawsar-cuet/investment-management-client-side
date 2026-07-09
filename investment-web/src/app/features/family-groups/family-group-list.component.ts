@@ -95,4 +95,16 @@ export class FamilyGroupListComponent implements OnInit, OnDestroy {
   openDetails(g: FriendGroup): void {
     this.router.navigate(['/family-groups', g.guid]);
   }
+
+  /**
+   * Two-letter avatar label for a list card. Falls back to "FG" when the
+   * name is missing so the avatar circle never looks empty.
+   */
+  initials(name: string | undefined | null): string {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return 'FG';
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 }

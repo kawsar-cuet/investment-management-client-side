@@ -1,57 +1,107 @@
-<header class="bg-white shadow-md sticky top-0 z-50">
-  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
-      <!-- Logo and Brand -->
-      <div class="flex items-center">
-        <div class="flex-shrink-0 flex items-center">
-          <div class="h-10 w-10 bg-primary-500 rounded-lg flex items-center justify-center">
-            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+<header class="bg-white shadow-md sticky top-0 z-30">
+  <nav class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-14 sm:h-16">
+      <!-- Left: hamburger + brand -->
+      <div class="flex items-center min-w-0 flex-1">
+        <!-- Hamburger button (mobile only) -->
+        <button
+          type="button"
+          (click)="toggleSidebar()"
+          [attr.aria-expanded]="sidebarOpen"
+          aria-label="Open navigation menu"
+          class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition"
+        >
+          <svg *ngIf="!sidebarOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg *ngIf="sidebarOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+
+        <div class="flex-shrink-0 flex items-center ml-1 md:ml-0">
+          <!-- Brand logo: 5 colored people around a central ring.
+               Inline SVG so it stays crisp at any size and themeable. -->
+          <div class="h-10 w-10 sm:h-11 sm:w-11 rounded-lg bg-white ring-1 ring-gray-200 flex items-center justify-center overflow-hidden">
+            <svg viewBox="0 0 64 64" class="h-9 w-9 sm:h-10 sm:w-10" aria-hidden="true">
+              <!-- Five colored "people" arranged around a central white ring,
+                   mirroring the Family Mart Sonchoy Prokolpo brand mark. -->
+              <g fill="none" stroke="none">
+                <!-- Top: blue -->
+                <path d="M32 6
+                         a6 6 0 1 1 -0.01 0 Z" fill="#2563eb"/>
+                <path d="M32 12
+                         L18 28
+                         a14 14 0 0 0 28 0 Z" fill="#2563eb"/>
+                <!-- Right: green -->
+                <path d="M58 32
+                         a6 6 0 1 1 -0.01 0 Z" fill="#16a34a"/>
+                <path d="M52 32
+                         L36 18
+                         a14 14 0 0 0 0 28 Z" fill="#16a34a"/>
+                <!-- Bottom-right: orange -->
+                <path d="M46 52
+                         a6 6 0 1 1 -0.01 0 Z" fill="#f97316"/>
+                <path d="M44 48
+                         L28 32
+                         a14 14 0 0 0 0 28
+                         a14 14 0 0 0 16 -12 Z" fill="#f97316"/>
+                <!-- Bottom-left: yellow -->
+                <path d="M18 52
+                         a6 6 0 1 1 -0.01 0 Z" fill="#eab308"/>
+                <path d="M20 48
+                         L36 32
+                         a14 14 0 0 0 -16 28
+                         a14 14 0 0 0 -8 -12 Z" fill="#eab308"/>
+                <!-- Left: red -->
+                <path d="M6 32
+                         a6 6 0 1 1 -0.01 0 Z" fill="#dc2626"/>
+                <path d="M12 32
+                         L28 46
+                         a14 14 0 0 0 0 -28 Z" fill="#dc2626"/>
+
+                <!-- White inner ring (negative space) -->
+                <circle cx="32" cy="32" r="7" fill="#ffffff"/>
+              </g>
             </svg>
           </div>
-          <span class="ml-3 text-xl font-heading font-bold text-gray-900 hidden sm:block">
-            Investment Platform
+          <!-- Brand name — product / family identity, single source of truth. -->
+          <span class="hidden md:inline ml-3 leading-tight">
+            <span class="block text-base sm:text-lg font-heading font-bold text-gray-900">
+              Family Mart Sonchoy Prokolpo
+            </span>
+            <span class="block text-xs font-medium text-gray-500">
+              Abdul Wares Family
+            </span>
+          </span>
+          <!-- Mobile: abbreviated brand mark -->
+          <span class="md:hidden ml-2 leading-tight">
+            <span class="block text-sm font-heading font-bold text-gray-900 truncate">
+              FMSP
+            </span>
+            <span class="block text-[10px] font-medium text-gray-500 truncate">
+              Abdul Wares Family
+            </span>
           </span>
         </div>
 
-        <!-- Desktop Navigation -->
-        <div class="hidden md:ml-10 md:flex md:space-x-8">
-          <a routerLink="/dashboard" routerLinkActive="border-primary-500 text-gray-900" 
-             class="border-b-2 border-transparent hover:border-gray-300 text-gray-600 hover:text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium transition">
-            Dashboard
-          </a>
-          <a routerLink="/groups" routerLinkActive="border-primary-500 text-gray-900"
-             class="border-b-2 border-transparent hover:border-gray-300 text-gray-600 hover:text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium transition">
-            Groups
-          </a>
-          <a routerLink="/members" routerLinkActive="border-primary-500 text-gray-900"
-             class="border-b-2 border-transparent hover:border-gray-300 text-gray-600 hover:text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium transition">
-            Members
-          </a>
-          <a routerLink="/deposits" routerLinkActive="border-primary-500 text-gray-900"
-             class="border-b-2 border-transparent hover:border-gray-300 text-gray-600 hover:text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium transition">
-            Deposits
-          </a>
-          <a routerLink="/reports" routerLinkActive="border-primary-500 text-gray-900"
-             class="border-b-2 border-transparent hover:border-gray-300 text-gray-600 hover:text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium transition">
-            Reports
-          </a>
-        </div>
+        <!-- Desktop top-bar intentionally has no nav links: the sidebar
+             already carries them. Repeating them here would double up. -->
       </div>
 
       <!-- Right side actions -->
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2 sm:space-x-4">
         <!-- Notifications -->
-        <button class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition" aria-label="Notifications">
+          <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
           </svg>
         </button>
 
         <!-- User Menu -->
         <div class="relative">
-          <button (click)="toggleUserMenu()" class="flex items-center space-x-3 hover:bg-gray-100 rounded-lg px-3 py-2 transition">
-            <div class="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center">
+          <button (click)="toggleUserMenu()" class="flex items-center space-x-2 sm:space-x-3 hover:bg-gray-100 rounded-lg p-1.5 sm:px-3 sm:py-2 transition" aria-label="User menu">
+            <div class="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary-100 flex items-center justify-center">
               <span class="text-primary-700 font-medium text-sm">
                 {{ (currentUser && currentUser.username) ? currentUser.username.charAt(0).toUpperCase() : 'U' }}
               </span>
@@ -59,13 +109,13 @@
             <span class="text-sm font-medium text-gray-700 hidden sm:block">
               {{ currentUser?.username || 'User' }}
             </span>
-            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
 
           <!-- Dropdown Menu -->
-          <div *ngIf="showUserMenu" 
+          <div *ngIf="showUserMenu"
                class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5">
             <div class="py-1">
               <div class="px-4 py-3 border-b border-gray-100">
@@ -87,7 +137,7 @@
               </a>
               <button (click)="logout()" class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50">
                 <svg class="inline h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l4-4m-4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                 </svg>
                 Sign out
               </button>

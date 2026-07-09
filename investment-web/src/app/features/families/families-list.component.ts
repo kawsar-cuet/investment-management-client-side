@@ -160,4 +160,16 @@ export class FamiliesListComponent implements OnInit, OnDestroy {
   openDetails(f: Family): void {
     this.router.navigate(['/families', f.guid]);
   }
+
+  /**
+   * Two-letter avatar label for a list card. Falls back to "F" when the name
+   * is missing so the avatar circle never looks empty.
+   */
+  initials(name: string | undefined | null): string {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return 'F';
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 }

@@ -1,118 +1,204 @@
-<div class="space-y-6">
-  <div>
-    <h1 class="text-3xl font-heading font-bold text-gray-900">Friend Groups</h1>
-    <p class="mt-2 text-gray-600">Create and manage your friend groups (invesment circles).</p>
+<div class="px-4 py-6 sm:px-6 sm:py-8 max-w-6xl mx-auto">
+  <!-- HEADER -->
+  <div class="mb-6 flex items-start justify-between flex-wrap gap-3">
+    <div>
+      <h1 class="text-xl sm:text-2xl font-heading font-bold text-gray-900">Friend Groups</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        Create and manage your friend groups (investment circles).
+      </p>
+    </div>
   </div>
 
-  <div *ngIf="success" class="rounded-md bg-green-50 p-4 border border-green-200">
-    <p class="text-sm text-green-700">{{ success }}</p>
-  </div>
-  <div *ngIf="error" class="rounded-md bg-red-50 p-4 border border-red-200">
-    <p class="text-sm text-red-700">{{ error }}</p>
-  </div>
-
-  <!-- Create form -->
-  <div class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Create New Group</h2>
-    <form [formGroup]="createForm" (ngSubmit)="create()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <div class="sm:col-span-1">
-        <label class="block text-sm font-medium text-gray-700">Group Name *</label>
-        <input type="text" formControlName="groupName"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div class="sm:col-span-1">
-        <label class="block text-sm font-medium text-gray-700">Description</label>
-        <input type="text" formControlName="description"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div class="flex items-end">
-        <button type="submit" [disabled]="createForm.invalid"
-                class="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
-          Create Group
-        </button>
-      </div>
-    </form>
+  <!-- Legacy-route notice (this page is intentionally minimal — the rich UI lives at /family-groups) -->
+  <div class="mb-6 flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <div class="flex-1">
+      <p class="font-medium">Looking for the full experience?</p>
+      <p class="text-xs sm:text-sm mt-1">
+        The rich Friend Groups UI (with cards, families, and members) is available at
+        <a routerLink="/family-groups" class="font-semibold underline hover:text-amber-900">/family-groups</a>.
+        Use this page for quick create / lookup actions.
+      </p>
+    </div>
+    <a routerLink="/family-groups"
+       class="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 inline-flex items-center gap-1">
+      Open
+      <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </a>
   </div>
 
-  <!-- Lookup by ID -->
-  <div class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Lookup Group by ID</h2>
-    <form [formGroup]="lookupForm" (ngSubmit)="lookup()" class="flex items-end space-x-4">
-      <div class="flex-1">
-        <label class="block text-sm font-medium text-gray-700">Group GUID</label>
-        <input type="text" formControlName="guid" placeholder="e.g. 7b8e...c3d"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <button type="submit" [disabled]="lookupForm.invalid"
-              class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
-        Find
-      </button>
-    </form>
+  <!-- ALERTS -->
+  <div *ngIf="success" class="mb-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 flex items-start gap-2">
+    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span>{{ success }}</span>
+  </div>
+  <div *ngIf="error" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-start gap-2">
+    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span>{{ error }}</span>
   </div>
 
-  <!-- Known groups table -->
-  <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-      <h2 class="text-lg font-heading font-semibold text-gray-900">Your Groups</h2>
+  <!-- CREATE + LOOKUP (side-by-side on sm+, stacked on mobile) -->
+  <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2">
+    <!-- CREATE -->
+    <div class="bg-white shadow-md rounded-lg border border-gray-200">
+      <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-transparent rounded-t-lg">
+        <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+          <span class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+          </span>
+          Create new group
+        </h2>
+      </div>
+      <form [formGroup]="createForm" (ngSubmit)="create()" class="p-4 sm:p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Group Name <span class="text-red-500">*</span></label>
+          <input type="text" formControlName="groupName" placeholder="e.g. Family Mahas"
+                 class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <input type="text" formControlName="description" placeholder="optional"
+                 class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
+        </div>
+        <div class="flex justify-end pt-2 border-t">
+          <button type="submit" [disabled]="createForm.invalid"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Create Group
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- LOOKUP -->
+    <div class="bg-white shadow-md rounded-lg border border-gray-200">
+      <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-secondary-50 to-transparent rounded-t-lg">
+        <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+          <span class="flex-shrink-0 h-8 w-8 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </span>
+          Lookup by ID
+        </h2>
+      </div>
+      <form [formGroup]="lookupForm" (ngSubmit)="lookup()" class="p-4 sm:p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Group GUID</label>
+          <input type="text" formControlName="guid" placeholder="e.g. 7b8e…c3d"
+                 class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 font-mono"/>
+        </div>
+        <div class="flex justify-end pt-2 border-t">
+          <button type="submit" [disabled]="lookupForm.invalid"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-600 hover:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Find
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- KNOWN GROUPS -->
+  <div class="bg-white shadow-md rounded-lg border border-gray-200">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-accent-50 to-transparent rounded-t-lg flex items-center justify-between flex-wrap gap-2">
+      <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+        <span class="flex-shrink-0 h-8 w-8 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </span>
+        Your groups
+      </h2>
       <button (click)="loadKnownGroups()"
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50">
+              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50 inline-flex items-center gap-1">
+        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         Refresh
       </button>
     </div>
 
-    <div *ngIf="loading" class="p-6 text-center text-gray-500">Loading groups...</div>
-
-    <div *ngIf="!loading && groups.length === 0" class="p-6 text-center text-gray-500">
-      No groups yet. Create one above or look one up by ID.
+    <!-- LOADING -->
+    <div *ngIf="loading" class="flex items-center justify-center gap-3 text-gray-500 py-10">
+      <svg class="animate-spin h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-sm font-medium">Loading groups…</span>
     </div>
 
-    <table *ngIf="!loading && groups.length > 0" class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GUID</th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let g of groups">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ g.groupName }}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">{{ g.description || '-' }}</td>
-          <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ g.guid }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-            <button (click)="startEdit(g)" class="text-primary-600 hover:text-primary-900">Edit</button>
-            <button (click)="delete(g)" class="text-red-600 hover:text-red-900">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- EMPTY -->
+    <div *ngIf="!loading && groups.length === 0" class="p-8 sm:p-10 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <p class="text-sm font-medium text-gray-700">No groups yet</p>
+      <p class="text-xs text-gray-500 mt-1">Create one above or look one up by ID.</p>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div *ngIf="!loading && groups.length > 0"
+         class="p-4 sm:p-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <article *ngFor="let g of groups"
+               class="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md hover:border-primary-300 transition group p-4 cursor-default">
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-semibold">
+            {{ (g.groupName || '?')[0] | uppercase }}
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="font-semibold text-gray-900 truncate group-hover:text-primary-700 transition" [title]="g.groupName">
+              {{ g.groupName }}
+            </h3>
+            <p *ngIf="g.description" class="text-xs text-gray-500 mt-0.5 line-clamp-2 break-words">{{ g.description }}</p>
+            <p class="text-xs text-gray-400 mt-1 font-mono truncate" [title]="g.guid">{{ g.guid }}</p>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 pt-3 mt-3 border-t border-gray-100">
+          <button (click)="startEdit(g)" class="text-sm text-primary-600 hover:text-primary-800 font-medium inline-flex items-center gap-1">
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Edit
+          </button>
+          <button (click)="delete(g)" class="text-sm text-red-600 hover:text-red-800 font-medium inline-flex items-center gap-1">
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/></svg>
+            Delete
+          </button>
+        </div>
+      </article>
+    </div>
   </div>
 
-  <!-- Edit modal -->
-  <div *ngIf="editing" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-      <h3 class="text-lg font-semibold mb-4">Edit Group</h3>
+  <!-- EDIT MODAL -->
+  <div *ngIf="editing" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 px-4">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+      <div class="flex items-start justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <svg class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          Edit Group
+        </h3>
+        <button (click)="cancelEdit()" class="text-gray-400 hover:text-gray-600">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
       <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Group Name</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
             <input type="text" formControlName="groupName"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border px-3 py-2"/>
+                   class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <input type="text" formControlName="description"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border px-3 py-2"/>
+                   class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
           </div>
         </div>
-        <div class="mt-6 flex justify-end space-x-3">
+        <div class="mt-6 flex justify-end gap-3 pt-4 border-t">
           <button type="button" (click)="cancelEdit()"
                   class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             Cancel
           </button>
           <button type="submit" [disabled]="editForm.invalid"
-                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 inline-flex items-center gap-1">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             Save
           </button>
         </div>

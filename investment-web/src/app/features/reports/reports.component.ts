@@ -124,6 +124,12 @@ export class ReportsComponent implements OnInit {
   trackByFamilyId = (_: number, r: FamilyReportRow) => r.familyId;
   trackByMemberId = (_: number, m: { memberId: string }) => m.memberId;
 
+  /** Sum of memberCount across all family rows for the summary stat tile. */
+  totalMembers(): number {
+    if (!this.report || !this.report.rows) return 0;
+    return this.report.rows.reduce((sum, r) => sum + (r.memberCount ?? 0), 0);
+  }
+
   /** Format a numeric amount safely (handles string | number | undefined). */
   fmt(value: number | string | null | undefined): string {
     if (value === null || value === undefined) return '-';

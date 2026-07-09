@@ -1,0 +1,86 @@
+/*
+  Sidebar acts as two widgets in one:
+
+  - On mobile (<768px): a fixed-position drawer that slides in from the left
+    when `open === true`. The panel is full-height, 16rem wide, and tucks
+    off-screen via translate-x. The wrapper becomes a transparent scrim when
+    open to capture taps outside the panel.
+  - On >=768px (md): the wrapper is a transparent static container and the
+    panel is a fixed 16rem sticky column. The hamburger in the header hides
+    so this state looks identical to the original layout.
+
+  Class `.is-open` is added by Angular when SidebarService emits true.
+*/
+
+.sidebar-aside {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+
+  // Off-screen by default on mobile, scrim invisible.
+  pointer-events: none;
+  background: transparent;
+  transition: background-color 200ms ease-in-out;
+
+  // The actual menu panel
+  .sidebar-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 16rem;
+    max-width: 80vw;
+    background: #ffffff;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  // While open: scrim becomes visible and blocks body taps.
+  &.is-open {
+    pointer-events: auto;
+    background-color: rgba(17, 24, 39, 0.5); // gray-900/50
+
+    .sidebar-panel {
+      transform: translateX(0);
+    }
+  }
+}
+
+// On md+ screens the aside becomes a passive sticky column.
+// No scrim, no translation, the panel just sits in place and the wrapper
+// contributes zero layout cost (zero size). The wrapping element is `display:
+// contents` so it doesn't get a containing block, keeping the parent flex
+// layout identical to before this change.
+@media (min-width: 768px) {
+  .sidebar-aside {
+    position: static;
+    inset: auto;
+    z-index: auto;
+    width: 16rem;
+    flex-shrink: 0;
+    pointer-events: auto;
+    background: transparent;
+    display: block; // Take part in the parent `.flex` row layout.
+
+    .sidebar-panel {
+      position: sticky;
+      top: 4rem; // below the 4rem-tall header
+      height: calc(100vh - 4rem);
+      transform: none;
+      box-shadow: none;
+      width: 100%;
+      max-width: none;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    // The scrim must never appear on desktop.
+    &.is-open {
+      background-color: transparent;
+      pointer-events: auto;
+    }
+  }
+}

@@ -1,173 +1,228 @@
-<div class="space-y-6">
-  <div class="flex items-start justify-between flex-wrap gap-3">
+<div class="px-4 py-6 sm:px-6 sm:py-8 max-w-7xl mx-auto">
+  <!-- HEADER -->
+  <div class="mb-6 flex items-start justify-between flex-wrap gap-3">
     <div>
-      <h1 class="text-3xl font-heading font-bold text-gray-900">Reports</h1>
-      <p class="mt-2 text-gray-600">
+      <h1 class="text-xl sm:text-2xl font-heading font-bold text-gray-900">Family Reports</h1>
+      <p class="text-sm text-gray-500 mt-1">
         Family-wise deposit summary. Use the filters to narrow by year or family;
         by default, all families across all years are included.
       </p>
     </div>
-    <div *ngIf="report" class="flex space-x-2">
+    <div *ngIf="report && report.rows.length > 0" class="flex flex-wrap gap-2">
       <button type="button" (click)="expandAll()"
-              class="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50">
+              class="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 inline-flex items-center gap-1">
+        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
         Expand all
       </button>
       <button type="button" (click)="collapseAll()"
-              class="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50">
+              class="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 inline-flex items-center gap-1">
+        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
         Collapse all
       </button>
     </div>
   </div>
 
-  <div *ngIf="error" class="rounded-md bg-red-50 p-4 border border-red-200">
-    <p class="text-sm text-red-700">{{ error }}</p>
+  <!-- ERROR -->
+  <div *ngIf="error" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-start gap-2">
+    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span>{{ error }}</span>
   </div>
 
-  <!-- Filter bar -->
-  <div class="bg-white shadow-md rounded-lg p-6">
-    <form [formGroup]="filterForm" (ngSubmit)="load()" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+  <!-- FILTER CARD -->
+  <div class="bg-white shadow-md rounded-lg border border-gray-200 mb-6">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-transparent rounded-t-lg">
+      <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+        <span class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+        </span>
+        Filters
+      </h2>
+    </div>
+    <form [formGroup]="filterForm" (ngSubmit)="load()" class="p-4 sm:p-6 grid grid-cols-1 gap-4 md:grid-cols-4 items-end">
       <div>
-        <label class="block text-sm font-medium text-gray-700">Year</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Year</label>
         <select formControlName="year"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option [ngValue]="null">All years</option>
           <option *ngFor="let y of yearOptions" [ngValue]="y">{{ y }}</option>
         </select>
       </div>
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium text-gray-700">Family</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Family</label>
         <select formControlName="familyId"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option value="">All families</option>
           <option *ngFor="let f of families" [value]="f.guid">{{ f.familyName }}</option>
         </select>
       </div>
-      <div class="flex space-x-2">
-        <button type="submit"
-                [disabled]="loading"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
+      <div class="flex gap-2">
+        <button type="submit" [disabled]="loading"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 inline-flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           Apply
         </button>
         <button type="button" (click)="clearFilters()" [disabled]="loading"
-                class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 inline-flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Reset
         </button>
       </div>
     </form>
   </div>
 
-  <div *ngIf="loading" class="text-center text-gray-500 py-8">
-    Loading family summary&hellip;
+  <!-- LOADING -->
+  <div *ngIf="loading" class="flex items-center justify-center gap-3 text-gray-500 py-12">
+    <svg class="animate-spin h-6 w-6 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span class="text-sm font-medium">Loading family summary…</span>
   </div>
 
-  <!-- Empty state -->
-  <div *ngIf="!loading && report && report.rows.length === 0"
-       class="bg-white shadow-md rounded-lg p-10 text-center text-gray-500">
-    No deposits found for the selected filters.
-  </div>
-
-  <!-- Family summary table -->
+  <!-- SUMMARY STAT TILES (when loaded with rows) -->
   <div *ngIf="!loading && report && report.rows.length > 0"
-       class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-wrap gap-2">
-      <h2 class="text-lg font-heading font-semibold text-gray-900">
-        Family Summary
-        <span *ngIf="report.year" class="text-sm font-normal text-gray-500">
-          &mdash; {{ report.year }}
-        </span>
-      </h2>
-      <p class="text-xs text-gray-500">
-        {{ report.rows.length }} {{ report.rows.length === 1 ? 'family' : 'families' }}
+       class="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="rounded-lg border border-gray-200 bg-white px-3 py-3">
+      <p class="text-xs uppercase text-gray-500">Families</p>
+      <p class="text-xl font-bold text-gray-900">{{ report.rows.length }}</p>
+    </div>
+    <div class="rounded-lg border border-gray-200 bg-white px-3 py-3">
+      <p class="text-xs uppercase text-gray-500">Members</p>
+      <p class="text-xl font-bold text-gray-900 font-mono">
+        {{ totalMembers() }}
       </p>
     </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="w-10"></th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Family</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Members</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Shares</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Deposits</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount (BDT)</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <ng-container *ngFor="let row of report.rows; trackBy: trackByFamilyId">
-            <tr class="hover:bg-gray-50">
-              <td class="px-2 py-4 align-top">
-                <button type="button"
-                        (click)="toggleFamily(row.familyId)"
-                        [attr.aria-label]="isExpanded(row.familyId) ? 'Collapse' : 'Expand'"
-                        class="text-gray-500 hover:text-gray-800 focus:outline-none">
-                  <svg *ngIf="!isExpanded(row.familyId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                  </svg>
-                  <svg *ngIf="isExpanded(row.familyId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.94l-3.71 3.83a.75.75 0 11-1.08-1.04l4.25-4.39a.75.75 0 011.08 0l4.25 4.39a.75.75 0 01.02 1.06z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ row.familyName }}</td>
-              <td class="px-6 py-4 text-sm text-gray-500">{{ row.groupName }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700 text-right font-mono">{{ row.memberCount }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700 text-right font-mono">{{ row.totalShares ?? '-' }}</td>
-              <td class="px-6 py-4 text-sm text-gray-700 text-right font-mono">{{ row.totalDepositCount }}</td>
-              <td class="px-6 py-4 text-sm font-semibold text-gray-900 text-right font-mono">{{ fmt(row.totalAmount) }}</td>
-            </tr>
-            <tr *ngIf="isExpanded(row.familyId) && row.members && row.members.length > 0" class="bg-gray-50">
-              <td></td>
-              <td colspan="6" class="px-6 py-4">
-                <div class="text-xs uppercase tracking-wider text-gray-500 mb-2">Member breakdown</div>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead>
-                      <tr class="text-xs text-gray-500 uppercase">
-                        <th class="px-3 py-2 text-left font-medium">Member</th>
-                        <th class="px-3 py-2 text-left font-medium">Type</th>
-                        <th class="px-3 py-2 text-left font-medium">Head</th>
-                        <th class="px-3 py-2 text-right font-medium">Shares</th>
-                        <th class="px-3 py-2 text-right font-medium">Deposits</th>
-                        <th class="px-3 py-2 text-right font-medium">Amount (BDT)</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                      <tr *ngFor="let m of row.members; trackBy: trackByMemberId">
-                        <td class="px-3 py-2 text-gray-900">{{ m.fullName }}</td>
-                        <td class="px-3 py-2 text-gray-500">{{ m.memberType || '-' }}</td>
-                        <td class="px-3 py-2 text-gray-500">
-                          <span *ngIf="m.isFamilyHead" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800">
-                            Head
-                          </span>
-                          <span *ngIf="!m.isFamilyHead" class="text-gray-400">-</span>
-                        </td>
-                        <td class="px-3 py-2 text-right font-mono text-gray-700">{{ m.shareCount ?? '-' }}</td>
-                        <td class="px-3 py-2 text-right font-mono text-gray-700">{{ m.depositCount }}</td>
-                        <td class="px-3 py-2 text-right font-mono text-gray-900 font-semibold">{{ fmt(m.totalAmount) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="isExpanded(row.familyId) && (!row.members || row.members.length === 0)" class="bg-gray-50">
-              <td></td>
-              <td colspan="6" class="px-6 py-4 text-sm text-gray-500 italic">
-                No members found for this family.
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-        <tfoot class="bg-gray-100">
-          <tr>
-            <td></td>
-            <td class="px-6 py-3 text-sm font-semibold text-gray-900" colspan="4">Grand Total</td>
-            <td class="px-6 py-3 text-sm font-bold text-gray-900 text-right font-mono">{{ report.totalDepositCount }} deposits</td>
-            <td class="px-6 py-3 text-sm font-bold text-primary-700 text-right font-mono">{{ fmt(report.totalAmount) }} BDT</td>
-          </tr>
-        </tfoot>
-      </table>
+    <div class="rounded-lg border border-gray-200 bg-white px-3 py-3">
+      <p class="text-xs uppercase text-gray-500">Deposits</p>
+      <p class="text-xl font-bold text-gray-900 font-mono">{{ report.totalDepositCount }}</p>
+    </div>
+    <div class="rounded-lg border border-primary-200 bg-primary-50 px-3 py-3">
+      <p class="text-xs uppercase text-primary-700">Total Amount (BDT)</p>
+      <p class="text-xl font-bold text-primary-700 font-mono">{{ fmt(report.totalAmount) }}</p>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="!loading && report && report.rows.length === 0"
+       class="bg-white shadow-md rounded-lg p-10 text-center text-gray-500">
+    <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    <p class="text-sm font-medium">No deposits found for the selected filters.</p>
+  </div>
+
+  <!-- FAMILY CARDS -->
+  <div *ngIf="!loading && report && report.rows.length > 0" class="space-y-3">
+    <article *ngFor="let row of report.rows; trackBy: trackByFamilyId"
+             class="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition">
+      <!-- Card head -->
+      <button type="button" (click)="toggleFamily(row.familyId)"
+              class="w-full px-4 py-3 flex items-center justify-between text-left bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 transition">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-semibold">
+            {{ (row.familyName || '?')[0] | uppercase }}
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="font-semibold text-gray-900 truncate">{{ row.familyName }}</p>
+              <span *ngIf="row.groupName" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
+                {{ row.groupName }}
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-0.5">
+              <span class="font-mono">{{ row.memberCount }}</span> member{{ row.memberCount === 1 ? '' : 's' }} ·
+              <span class="font-mono">{{ row.totalShares ?? '-' }}</span> shares ·
+              <span class="font-mono">{{ row.totalDepositCount }}</span> deposit{{ row.totalDepositCount === 1 ? '' : 's' }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 ml-2">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-semibold font-mono bg-primary-50 text-primary-700 border border-primary-200">
+            {{ fmt(row.totalAmount) }}
+          </span>
+          <span class="text-gray-400">
+            <svg *ngIf="!isExpanded(row.familyId)" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <svg *ngIf="isExpanded(row.familyId)" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+          </span>
+        </div>
+      </button>
+
+      <!-- Member breakdown (expandable) -->
+      <div *ngIf="isExpanded(row.familyId)" class="border-t border-gray-200 bg-white">
+        <!-- Desktop / tablet table -->
+        <div class="hidden sm:block overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Head</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Shares</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Deposits</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount (BDT)</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+              <tr *ngFor="let m of row.members; trackBy: trackByMemberId" class="hover:bg-gray-50">
+                <td class="px-3 py-2 text-gray-900 font-medium">{{ m.fullName }}</td>
+                <td class="px-3 py-2 text-gray-500">{{ m.memberType || '-' }}</td>
+                <td class="px-3 py-2">
+                  <span *ngIf="m.isFamilyHead" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800">
+                    Head
+                  </span>
+                  <span *ngIf="!m.isFamilyHead" class="text-gray-400">-</span>
+                </td>
+                <td class="px-3 py-2 text-right font-mono text-gray-700">{{ m.shareCount ?? '-' }}</td>
+                <td class="px-3 py-2 text-right font-mono text-gray-700">{{ m.depositCount }}</td>
+                <td class="px-3 py-2 text-right font-mono text-gray-900 font-semibold">{{ fmt(m.totalAmount) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile stacked card list -->
+        <div class="sm:hidden divide-y divide-gray-100">
+          <div *ngFor="let m of row.members; trackBy: trackByMemberId" class="p-3 flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <p class="text-sm font-semibold text-gray-900 truncate">{{ m.fullName }}</p>
+                <span *ngIf="m.isFamilyHead" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800">Head</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5">{{ m.memberType || '-' }}</p>
+              <p class="text-xs text-gray-500 mt-0.5">
+                <span class="font-mono">{{ m.shareCount ?? '-' }}</span> shares ·
+                <span class="font-mono">{{ m.depositCount }}</span> deposit{{ m.depositCount === 1 ? '' : 's' }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-bold text-primary-700 font-mono">{{ fmt(m.totalAmount) }}</p>
+              <p class="text-xs text-gray-500">BDT</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state for family with no members -->
+        <div *ngIf="!row.members || row.members.length === 0"
+             class="px-4 py-4 text-sm text-gray-500 italic bg-gray-50">
+          No members found for this family.
+        </div>
+      </div>
+    </article>
+
+    <!-- GRAND TOTAL FOOTER -->
+    <div class="rounded-lg border-2 border-primary-200 bg-gradient-to-r from-primary-50 to-secondary-50 p-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <svg class="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <p class="text-sm font-semibold text-gray-900">
+          Grand Total — {{ report.rows.length }} {{ report.rows.length === 1 ? 'family' : 'families' }}
+        </p>
+      </div>
+      <div class="text-right">
+        <p class="text-xs text-gray-500">
+          <span class="font-mono">{{ report.totalDepositCount }}</span> deposits
+        </p>
+        <p class="text-2xl font-bold text-primary-700 font-mono">{{ fmt(report.totalAmount) }} BDT</p>
+      </div>
     </div>
   </div>
 </div>

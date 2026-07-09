@@ -1,65 +1,75 @@
-<div class="px-6 py-8 max-w-7xl mx-auto">
+<div class="px-4 py-6 sm:px-6 sm:py-8 max-w-7xl mx-auto">
   <!-- HEADER -->
   <div class="mb-6">
-    <h1 class="text-2xl font-heading font-bold text-gray-900">Deposits</h1>
+    <h1 class="text-xl sm:text-2xl font-heading font-bold text-gray-900">Deposits</h1>
     <p class="text-sm text-gray-500 mt-1">
       Record a single-member deposit or distribute a family bulk deposit across all members based on share count.
     </p>
   </div>
 
   <!-- ALERTS -->
-  <div *ngIf="error" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-    {{ error }}
+  <div *ngIf="error" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-start gap-2">
+    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>{{ error }}</span>
   </div>
-  <div *ngIf="success" class="mb-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
-    {{ success }}
+  <div *ngIf="success" class="mb-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 flex items-start gap-2">
+    <svg class="h-5 w-5 flex-shrink-0 mt-0.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>{{ success }}</span>
   </div>
 
-  <!-- TABS -->
-  <div class="border-b border-gray-200 mb-6">
-    <nav class="-mb-px flex space-x-8">
+  <!-- TABS (pill style) -->
+  <div class="mb-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-1 inline-flex flex-wrap gap-1 w-full sm:w-auto">
       <button type="button"
               (click)="activeTab = 'single'"
-              [class.border-primary-500]="activeTab === 'single'"
-              [class.text-primary-600]="activeTab === 'single'"
-              [class.border-transparent]="activeTab !== 'single'"
-              [class.text-gray-500]="activeTab !== 'single'"
-              class="py-3 px-1 border-b-2 font-medium text-sm hover:text-primary-600">
-        Single Member Deposit
+              [ngClass]="activeTab === 'single' ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'"
+              class="flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition">
+        Single Member
       </button>
       <button type="button"
               (click)="activeTab = 'bulk'"
-              [class.border-primary-500]="activeTab === 'bulk'"
-              [class.text-primary-600]="activeTab === 'bulk'"
-              [class.border-transparent]="activeTab !== 'bulk'"
-              [class.text-gray-500]="activeTab !== 'bulk'"
-              class="py-3 px-1 border-b-2 font-medium text-sm hover:text-primary-600">
-        Family Bulk Deposit
+              [ngClass]="activeTab === 'bulk' ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'"
+              class="flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition">
+        Family Bulk
       </button>
       <button type="button"
               (click)="activeTab = 'all'"
-              [class.border-primary-500]="activeTab === 'all'"
-              [class.text-primary-600]="activeTab === 'all'"
-              [class.border-transparent]="activeTab !== 'all'"
-              [class.text-gray-500]="activeTab !== 'all'"
-              class="py-3 px-1 border-b-2 font-medium text-sm hover:text-primary-600">
+              [ngClass]="activeTab === 'all' ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50'"
+              class="flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition">
         All Deposits
       </button>
-    </nav>
+    </div>
   </div>
 
+  <!--
+    NOTE on dropdown clipping: native <select> popups are rendered by the
+    browser outside the element's box. Card wrappers therefore avoid
+    `overflow-hidden` so the popup flows over siblings naturally. The
+    rounded shape is preserved by an explicit `border` on the outer card
+    and `rounded-t-lg` on the gradient header strip.
+  -->
+
   <!-- ================== SINGLE DEPOSIT ================== -->
-  <div *ngIf="activeTab === 'single'" class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Single Member Deposit</h2>
-    <p class="text-sm text-gray-500 mb-4">
-      Record a deposit for one specific member of a family.
-    </p>
-    <form [formGroup]="singleForm" (ngSubmit)="submitSingle()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div *ngIf="activeTab === 'single'" class="bg-white shadow-md rounded-lg border border-gray-200">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-transparent rounded-t-lg">
+      <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+        <span class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        </span>
+        Single Member Deposit
+      </h2>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1 ml-10">Record a deposit for one specific member of a family.</p>
+    </div>
+    <form [formGroup]="singleForm" (ngSubmit)="submitSingle()" class="p-4 sm:p-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
       <!-- Family Group -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Family Group *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Family Group <span class="text-red-500">*</span></label>
         <select formControlName="groupId"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option value="">— select group —</option>
           <option *ngFor="let g of groups" [value]="g.guid">{{ g.groupName }}</option>
         </select>
@@ -67,9 +77,9 @@
 
       <!-- Family -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Family *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Family <span class="text-red-500">*</span></label>
         <select formControlName="familyId"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option value="">— select family —</option>
           <option *ngFor="let f of familiesByGroup" [value]="f.guid">{{ f.familyName }}</option>
         </select>
@@ -77,9 +87,9 @@
 
       <!-- Member -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Member *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Member <span class="text-red-500">*</span></label>
         <select formControlName="memberId"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option value="">— select member —</option>
           <option *ngFor="let m of membersByFamily" [value]="m.guid">
             {{ m.fullName }}{{ m.isFamilyHead ? ' (head)' : '' }}
@@ -89,72 +99,77 @@
 
       <!-- Amount -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Amount *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Amount <span class="text-red-500">*</span></label>
         <input type="number" formControlName="amount" min="1" step="0.01"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+               class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
       </div>
 
       <!-- Month -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Month *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Month <span class="text-red-500">*</span></label>
         <select formControlName="depositMonth"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
-          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
+          <option *ngFor="let m of months" [ngValue]="m.value">{{ m.label }}</option>
         </select>
       </div>
 
       <!-- Year -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Year *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Year <span class="text-red-500">*</span></label>
         <select formControlName="depositYear"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option *ngFor="let y of years" [value]="y">{{ y }}</option>
         </select>
       </div>
 
       <!-- Date -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Deposit Date *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Date <span class="text-red-500">*</span></label>
         <input type="date" formControlName="depositDate"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+               class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
       </div>
 
       <!-- Notes -->
       <div class="sm:col-span-2">
-        <label class="block text-sm font-medium text-gray-700">Notes</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
         <input type="text" formControlName="notes"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"
                placeholder="optional"/>
       </div>
 
-      <div class="sm:col-span-3" *ngIf="isAdmin">
+      <div class="sm:col-span-3 flex flex-wrap items-center gap-3 pt-2 border-t" *ngIf="isAdmin">
         <button type="submit" [disabled]="singleForm.invalid"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
           Record Single Deposit
         </button>
       </div>
       <div class="sm:col-span-3" *ngIf="!isAdmin">
-        <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-          Read-only — only ADMIN role can record deposits.
-        </p>
+        <div class="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+          <svg class="h-4 w-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Read-only — only ADMIN role can record deposits.</span>
+        </div>
       </div>
     </form>
   </div>
 
   <!-- ================== FAMILY BULK DEPOSIT ================== -->
-  <div *ngIf="activeTab === 'bulk'" class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-2">Family Bulk Deposit</h2>
-    <p class="text-sm text-gray-500 mb-4">
-      Enter the total family deposit. It will be split across all family members
-      <strong>proportionally by share count</strong>. For example, with 4 members each holding 1 share and a total of 4000,
-      each member receives 1000.
-    </p>
-    <form [formGroup]="bulkForm" (ngSubmit)="submitBulk()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div *ngIf="activeTab === 'bulk'" class="bg-white shadow-md rounded-lg border border-gray-200">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-secondary-50 to-transparent rounded-t-lg">
+      <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+        <span class="flex-shrink-0 h-8 w-8 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </span>
+        Family Bulk Deposit
+      </h2>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1 ml-10">Enter the total family deposit. It will be split across all family members <strong>proportionally by share count</strong>.</p>
+    </div>
+    <form [formGroup]="bulkForm" (ngSubmit)="submitBulk()" class="p-4 sm:p-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
       <!-- Family Group -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Family Group *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Family Group <span class="text-red-500">*</span></label>
         <select formControlName="groupId"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option value="">— select group —</option>
           <option *ngFor="let g of groups" [value]="g.guid">{{ g.groupName }}</option>
         </select>
@@ -162,302 +177,410 @@
 
       <!-- Family -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Family *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Family <span class="text-red-500">*</span></label>
         <select formControlName="familyId"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option value="">— select family —</option>
           <option *ngFor="let f of familiesByGroup" [value]="f.guid">{{ f.familyName }}</option>
         </select>
-        <p *ngIf="familiesByGroup.length === 0 && bulkForm.get('groupId')?.value" class="mt-1 text-xs text-amber-600">
-          No families in the selected group.
-        </p>
+        <p *ngIf="familiesByGroup.length === 0 && bulkForm.get('groupId')?.value" class="mt-1 text-xs text-amber-600">No families in the selected group.</p>
       </div>
 
       <!-- Total Amount -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Total Deposit Amount *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Total Deposit Amount <span class="text-red-500">*</span></label>
         <input type="number" formControlName="totalAmount" min="0" step="0.01"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"
                placeholder="0"/>
         <p class="mt-1 text-xs text-gray-500">Enter a positive amount. Will be split by share count.</p>
       </div>
 
       <!-- Month -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Month *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Month <span class="text-red-500">*</span></label>
         <select formControlName="depositMonth"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
-          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
+          <option *ngFor="let m of months" [ngValue]="m.value">{{ m.label }}</option>
         </select>
       </div>
 
       <!-- Year -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Year *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Year <span class="text-red-500">*</span></label>
         <select formControlName="depositYear"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+                class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
           <option *ngFor="let y of years" [value]="y">{{ y }}</option>
         </select>
       </div>
 
       <!-- Date -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Deposit Date *</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Date <span class="text-red-500">*</span></label>
         <input type="date" formControlName="depositDate"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+               class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"/>
       </div>
 
       <!-- Notes -->
       <div class="sm:col-span-3">
-        <label class="block text-sm font-medium text-gray-700">Notes</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
         <input type="text" formControlName="notes"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2"
                placeholder="optional"/>
       </div>
     </form>
 
     <!-- LIVE PREVIEW -->
-    <div class="mt-6 border-t pt-4">
-      <h3 class="text-md font-semibold text-gray-900 mb-2">Distribution Preview</h3>
-      <p *ngIf="previewing" class="text-sm text-gray-500">Calculating split…</p>
-      <p *ngIf="previewError" class="text-sm text-red-600">{{ previewError }}</p>
-      <p *ngIf="!preview && !previewing && !previewError" class="text-sm text-gray-500">
-        Select a family and enter a total amount to see the per-member split.
-      </p>
-      <div *ngIf="preview" class="overflow-x-auto">
-        <div class="flex gap-4 text-sm text-gray-700 mb-2">
-          <div><strong>Total amount:</strong> {{ preview.totalAmount }}</div>
-          <div><strong>Total shares:</strong> {{ preview.sumOfShares }}</div>
-          <div><strong>Per share:</strong> {{ preview.perShare }}</div>
+    <div class="px-4 sm:px-6 pb-4 sm:pb-6">
+      <div class="border-t pt-4">
+        <h3 class="text-sm sm:text-md font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Distribution Preview
+        </h3>
+        <p *ngIf="previewing" class="text-sm text-gray-500 flex items-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Calculating split…
+        </p>
+        <p *ngIf="previewError" class="text-sm text-red-600 flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          {{ previewError }}
+        </p>
+        <p *ngIf="!preview && !previewing && !previewError" class="text-sm text-gray-500">Select a family and enter a total amount to see the per-member split.</p>
+
+        <div *ngIf="preview" class="rounded-lg border border-gray-200 overflow-hidden">
+          <!-- Summary stat tiles -->
+          <div class="grid grid-cols-3 divide-x divide-gray-200 bg-gradient-to-r from-primary-50 to-secondary-50">
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-500">Total amount</p>
+              <p class="text-sm sm:text-base font-bold text-primary-700">{{ preview.totalAmount }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-500">Total shares</p>
+              <p class="text-sm sm:text-base font-bold text-gray-900">{{ preview.sumOfShares }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-500">Per share</p>
+              <p class="text-sm sm:text-base font-bold text-secondary-700">{{ preview.perShare }}</p>
+            </div>
+          </div>
+
+          <!-- Members table (responsive) -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+                  <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Shares</th>
+                  <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let row of preview.rows">
+                  <td class="px-3 py-2 text-sm text-gray-900">
+                    {{ row.fullName }}
+                    <span *ngIf="row.isFamilyHead" class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800">head</span>
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-700 text-right font-mono">{{ row.shareCount }}</td>
+                  <td class="px-3 py-2 text-sm font-semibold text-gray-900 text-right font-mono">{{ row.amount }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <table class="min-w-full divide-y divide-gray-200 border">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
-              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shares</th>
-              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let row of preview.rows">
-              <td class="px-3 py-2 text-sm text-gray-900">
-                {{ row.fullName }}
-                <span *ngIf="row.isFamilyHead" class="ml-1 text-xs text-primary-600">(head)</span>
-              </td>
-              <td class="px-3 py-2 text-sm text-gray-700">{{ row.shareCount }}</td>
-              <td class="px-3 py-2 text-sm font-semibold text-gray-900">{{ row.amount }}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
-    </div>
 
-    <div class="mt-4 flex flex-wrap items-center gap-3">
-      <!-- PRIMARY ACTION: Create button (ADMIN only; disabled until valid preview + amount > 0) -->
-      <button type="button" *ngIf="isAdmin" (click)="submitBulk()"
-              [disabled]="!canSubmitBulk"
-              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-600 hover:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed">
-        Create {{ preview?.rows?.length || 0 }} Deposit{{ (preview?.rows?.length || 0) === 1 ? '' : 's' }}
-      </button>
-      <span *ngIf="!isAdmin" class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-        Read-only — only ADMIN role can submit bulk deposits.
-      </span>
+      <!-- ACTIONS -->
+      <div class="mt-4 flex flex-wrap items-center gap-3 pt-4 border-t">
+        <!-- PRIMARY ACTION: Create button (ADMIN only; disabled until valid preview + amount > 0) -->
+        <button type="button" *ngIf="isAdmin" (click)="submitBulk()"
+                [disabled]="!canSubmitBulk"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-600 hover:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+          Create {{ preview?.rows?.length || 0 }} Deposit{{ (preview?.rows?.length || 0) === 1 ? '' : 's' }}
+        </button>
+        <span *ngIf="!isAdmin" class="inline-flex items-start gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+          <svg class="h-4 w-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Read-only — only ADMIN role can submit bulk deposits.
+        </span>
 
-      <!-- RESET: only visible after a successful submission -->
-      <button type="button" *ngIf="bulkJustSubmitted" (click)="resetBulk()"
-              class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-        Reset
-      </button>
+        <!-- RESET: only visible after a successful submission -->
+        <button type="button" *ngIf="bulkJustSubmitted" (click)="resetBulk()"
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 inline-flex items-center gap-2">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Reset
+        </button>
 
-      <p *ngIf="!selectedFamilyHeadId" class="text-xs text-amber-600">
-        The selected family has no family head, so bulk deposit cannot proceed.
-      </p>
-      <p *ngIf="selectedFamilyHeadId && bulkForm.get('totalAmount')?.value <= 0"
-         class="text-xs text-amber-600">
-        Enter a total amount greater than 0 to preview and submit.
-      </p>
+        <p *ngIf="!selectedFamilyHeadId" class="text-xs text-amber-600 inline-flex items-center gap-1">
+          <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+          The selected family has no family head, so bulk deposit cannot proceed.
+        </p>
+        <p *ngIf="selectedFamilyHeadId && bulkForm.get('totalAmount')?.value <= 0"
+           class="text-xs text-amber-600 inline-flex items-center gap-1">
+          <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+          Enter a total amount greater than 0 to preview and submit.
+        </p>
+      </div>
     </div>
   </div>
 
   <!-- ================== ALL DEPOSITS ================== -->
-  <div *ngIf="activeTab === 'all'" class="bg-white shadow-md rounded-lg p-6">
-    <div class="flex items-center justify-between mb-2">
-      <h2 class="text-lg font-heading font-semibold text-gray-900">All Deposits</h2>
-      <div class="flex items-center gap-2 text-sm">
-        <span *ngIf="!searchLoading && searchResults.length > 0" class="text-gray-600">
-          {{ searchResults.length }} record{{ searchResults.length === 1 ? '' : 's' }} ·
-          <strong class="text-primary-700">Total {{ searchGrandTotal | number:'1.2-2' }}</strong>
+  <div *ngIf="activeTab === 'all'" class="bg-white shadow-md rounded-lg border border-gray-200">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-accent-50 to-transparent rounded-t-lg">
+      <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900 flex items-center gap-2">
+        <span class="flex-shrink-0 h-8 w-8 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
         </span>
-      </div>
-    </div>
-    <p class="text-sm text-gray-500 mb-4">
-      Search all deposits by member name, family name, or notes. Admins see Create / Edit / Delete controls elsewhere;
-      everyone can view, search, and read totals here.
-    </p>
-
-    <!-- SEARCH BAR -->
-    <form [formGroup]="searchForm" class="grid grid-cols-1 gap-4 sm:grid-cols-12 mb-4">
-      <!-- Keyword -->
-      <div class="sm:col-span-6">
-        <label class="block text-sm font-medium text-gray-700">Search (member name, family name, notes)</label>
-        <input type="text" formControlName="keyword"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
-               placeholder="e.g. Samad, Bilkis, January rent"/>
-      </div>
-      <!-- Month -->
-      <div class="sm:col-span-2">
-        <label class="block text-sm font-medium text-gray-700">Month</label>
-        <select formControlName="month"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
-          <option [ngValue]="''">All</option>
-          <option *ngFor="let m of months" [ngValue]="m">{{ m }}</option>
-        </select>
-      </div>
-      <!-- Year -->
-      <div class="sm:col-span-2">
-        <label class="block text-sm font-medium text-gray-700">Year</label>
-        <select formControlName="year"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
-          <option [ngValue]="''">All</option>
-          <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
-        </select>
-      </div>
-      <!-- Status -->
-      <div class="sm:col-span-2">
-        <label class="block text-sm font-medium text-gray-700">Status</label>
-        <select formControlName="status"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
-          <option [ngValue]="'ACTIVE'">Active</option>
-          <option [ngValue]="'INACTIVE'">Inactive</option>
-          <option [ngValue]="'DELETED'">Deleted</option>
-          <option [ngValue]="''">All (incl. deleted)</option>
-        </select>
-      </div>
-      <!-- Buttons row -->
-      <div class="sm:col-span-12 flex flex-wrap gap-2">
-        <button type="button" (click)="runSearch()"
-                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
-          Search
-        </button>
-        <button type="button" (click)="clearSearch()"
-                class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
-          Reset
-        </button>
-        <span *ngIf="searchLoading" class="text-sm text-gray-500 self-center">Searching…</span>
-      </div>
-    </form>
-
-    <div *ngIf="searchError" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-      {{ searchError }}
+        All Deposits
+      </h2>
+      <p class="text-xs sm:text-sm text-gray-500 mt-1 ml-10">Search all deposits by member name, family name, or notes.</p>
     </div>
 
-    <!-- RESULTS — GROUPED BY FAMILY -->
-    <div *ngIf="groupedResults.length > 0" class="space-y-4">
-      <div *ngFor="let g of groupedResults; trackBy: trackByGuid"
-           class="border rounded-lg overflow-hidden">
-        <!-- Family header -->
-        <button type="button" (click)="toggleFamily(g.familyId)"
-                class="w-full flex items-center justify-between bg-gray-50 px-4 py-3 text-left hover:bg-gray-100">
-          <span class="font-semibold text-gray-900">
-            {{ g.familyName }}
-            <span class="ml-2 text-xs text-gray-500">({{ g.rows.length }})</span>
-          </span>
-          <span class="flex items-center gap-3">
-            <span class="text-sm font-semibold text-primary-700">
-              {{ g.total | number:'1.2-2' }}
-            </span>
-            <span class="text-gray-400">{{ isFamilyExpanded(g.familyId) ? '▾' : '▸' }}</span>
-          </span>
-        </button>
-
-        <!-- Per-family table -->
-        <div *ngIf="isFamilyExpanded(g.familyId)" class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-white">
-              <tr>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Period</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shares</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Deposited By</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
-                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase" *ngIf="isAdmin">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
-              <tr *ngFor="let row of g.rows; trackBy: trackByGuid">
-                <ng-container *ngIf="editing && editing.guid === row.guid; else searchViewRow">
-                  <!-- edit mode for search-result row -->
-                  <td class="px-3 py-2 text-sm text-gray-900">{{ row.memberName }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositMonth }}/{{ row.depositYear }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositDate }}</td>
-                  <td class="px-3 py-2">
-                    <input type="number" [value]="editForm.value.amount"
-                           (input)="editForm.patchValue({ amount: $any($event.target).value })"
-                           class="w-24 rounded-md border-gray-300 sm:text-sm border px-2 py-1"/>
-                  </td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.sharesCovered || 1 }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositedByName }}</td>
-                  <td class="px-3 py-2">
-                    <input type="text" [value]="editForm.value.notes"
-                           (input)="editForm.patchValue({ notes: $any($event.target).value })"
-                           class="w-full rounded-md border-gray-300 sm:text-sm border px-2 py-1"/>
-                  </td>
-                  <td class="px-3 py-2 text-sm">{{ row.status }}</td>
-                  <td class="px-3 py-2 text-right" *ngIf="isAdmin">
-                    <button (click)="saveSearchEdit()" class="text-sm text-green-600 hover:text-green-800 mr-2">Save</button>
-                    <button (click)="cancelEdit()" class="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
-                  </td>
-                </ng-container>
-                <ng-template #searchViewRow>
-                  <td class="px-3 py-2 text-sm text-gray-900">{{ row.memberName }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositMonth }}/{{ row.depositYear }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositDate }}</td>
-                  <td class="px-3 py-2 text-sm font-semibold text-gray-900">{{ row.amount | number:'1.2-2' }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.sharesCovered || 1 }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositedByName }}</td>
-                  <td class="px-3 py-2 text-sm text-gray-500">{{ row.notes || '—' }}</td>
-                  <td class="px-3 py-2 text-sm">
-                    <span class="inline-block px-2 py-0.5 rounded-full text-xs"
-                          [class.bg-green-100]="row.status === 'ACTIVE'"
-                          [class.text-green-800]="row.status === 'ACTIVE'"
-                          [class.bg-gray-200]="row.status === 'INACTIVE'"
-                          [class.text-gray-700]="row.status === 'INACTIVE'"
-                          [class.bg-red-100]="row.status === 'DELETED'"
-                          [class.text-red-800]="row.status === 'DELETED'">
-                      {{ row.status }}
-                    </span>
-                  </td>
-                  <td class="px-3 py-2 text-right" *ngIf="isAdmin">
-                    <button (click)="startSearchEdit(row)" class="text-sm text-primary-600 hover:text-primary-800 mr-2">Edit</button>
-                    <button (click)="deleteSearchRow(row)" class="text-sm text-red-600 hover:text-red-800">Delete</button>
-                  </td>
-                </ng-template>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr class="bg-gray-50">
-                <td [attr.colspan]="isAdmin ? 3 : 3" class="px-3 py-2 text-xs font-semibold text-gray-700 text-right">Family subtotal</td>
-                <td class="px-3 py-2 text-sm font-bold text-primary-700">{{ g.total | number:'1.2-2' }}</td>
-                <td [attr.colspan]="isAdmin ? 5 : 4"></td>
-              </tr>
-            </tfoot>
-          </table>
+    <div class="p-4 sm:p-6">
+      <!-- Summary stats -->
+      <div *ngIf="!searchLoading && searchResults.length > 0"
+           class="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+          <p class="text-xs text-gray-500 uppercase">Records</p>
+          <p class="text-lg font-bold text-gray-900">{{ searchResults.length }}</p>
+        </div>
+        <div class="rounded-lg border border-primary-200 bg-primary-50 px-3 py-2 sm:col-span-2">
+          <p class="text-xs text-primary-700 uppercase">Grand total</p>
+          <p class="text-lg font-bold text-primary-700">{{ searchGrandTotal | number:'1.2-2' }}</p>
         </div>
       </div>
 
-      <!-- Grand total -->
-      <div class="flex justify-end items-center gap-3 pt-2 border-t">
-        <span class="text-sm text-gray-700">Grand total</span>
-        <span class="text-lg font-bold text-primary-700">{{ searchGrandTotal | number:'1.2-2' }}</span>
+      <!-- SEARCH BAR -->
+      <form [formGroup]="searchForm" class="grid grid-cols-1 gap-4 sm:grid-cols-12 mb-4">
+        <!-- Keyword -->
+        <div class="sm:col-span-6">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+            <input type="text" formControlName="keyword"
+                   class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm pl-10 pr-3 py-2"
+                   placeholder="member name, family name, notes…"/>
+          </div>
+        </div>
+        <!-- Month -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Month</label>
+          <select formControlName="month"
+                  class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
+            <option [ngValue]="''">All</option>
+            <option *ngFor="let m of months" [ngValue]="m.value">{{ m.label }}</option>
+          </select>
+        </div>
+        <!-- Year -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Year</label>
+          <select formControlName="year"
+                  class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
+            <option [ngValue]="''">All</option>
+            <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+          </select>
+        </div>
+        <!-- Status -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select formControlName="status"
+                  class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 bg-white">
+            <option [ngValue]="'ACTIVE'">Active</option>
+            <option [ngValue]="'INACTIVE'">Inactive</option>
+            <option [ngValue]="'DELETED'">Deleted</option>
+            <option [ngValue]="''">All (incl. deleted)</option>
+          </select>
+        </div>
+        <!-- Buttons row -->
+        <div class="sm:col-span-12 flex flex-wrap gap-2">
+          <button type="button" (click)="runSearch()"
+                  class="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 inline-flex items-center gap-2 shadow-sm">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Search
+          </button>
+          <button type="button" (click)="clearSearch()"
+                  class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 inline-flex items-center gap-2">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Reset
+          </button>
+          <span *ngIf="searchLoading" class="text-sm text-gray-500 self-center inline-flex items-center gap-2">
+            <svg class="animate-spin h-4 w-4 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Searching…
+          </span>
+        </div>
+      </form>
+
+      <div *ngIf="searchError" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        {{ searchError }}
       </div>
+
+      <!-- RESULTS — GROUPED BY FAMILY (CARD VIEW) -->
+      <div *ngIf="groupedResults.length > 0" class="space-y-3">
+        <article *ngFor="let g of groupedResults; trackBy: trackByGuid"
+                 class="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition">
+          <!-- Family header -->
+          <button type="button" (click)="toggleFamily(g.familyId)"
+                  class="w-full flex items-center justify-between px-4 py-3 text-left bg-gradient-to-r from-gray-50 to-white hover:from-gray-100 transition">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="flex-shrink-0 h-9 w-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-semibold">
+                {{ (g.familyName || '?')[0] | uppercase }}
+              </div>
+              <div class="min-w-0">
+                <p class="font-semibold text-gray-900 truncate">{{ g.familyName }}</p>
+                <p class="text-xs text-gray-500">{{ g.rows.length }} deposit{{ g.rows.length === 1 ? '' : 's' }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-semibold bg-primary-100 text-primary-800 font-mono">
+                {{ g.total | number:'1.2-2' }}
+              </span>
+              <span class="text-gray-400">
+                <svg *ngIf="!isFamilyExpanded(g.familyId)" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                <svg *ngIf="isFamilyExpanded(g.familyId)" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+              </span>
+            </div>
+          </button>
+
+          <!-- Per-family table (expandable) -->
+          <div *ngIf="isFamilyExpanded(g.familyId)" class="border-t border-gray-200">
+            <!-- Desktop / tablet table -->
+            <div class="hidden sm:block overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Period</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
+                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Shares</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Deposited By</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase" *ngIf="isAdmin">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-100">
+                  <tr *ngFor="let row of g.rows; trackBy: trackByGuid">
+                    <ng-container *ngIf="editing && editing.guid === row.guid; else searchViewRow">
+                      <td class="px-3 py-2 text-sm text-gray-900">{{ row.memberName }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositMonth }}/{{ row.depositYear }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositDate }}</td>
+                      <td class="px-3 py-2">
+                        <input type="number" [value]="editForm.value.amount"
+                               (input)="editForm.patchValue({ amount: $any($event.target).value })"
+                               class="w-24 rounded-md border-gray-300 sm:text-sm border px-2 py-1"/>
+                      </td>
+                      <td class="px-3 py-2 text-sm text-gray-700">{{ row.sharesCovered || 1 }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositedByName }}</td>
+                      <td class="px-3 py-2">
+                        <input type="text" [value]="editForm.value.notes"
+                               (input)="editForm.patchValue({ notes: $any($event.target).value })"
+                               class="w-full rounded-md border-gray-300 sm:text-sm border px-2 py-1"/>
+                      </td>
+                      <td class="px-3 py-2 text-sm">{{ row.status }}</td>
+                      <td class="px-3 py-2 text-right" *ngIf="isAdmin">
+                        <button (click)="saveSearchEdit()" class="text-sm text-green-600 hover:text-green-800 mr-2 font-medium">Save</button>
+                        <button (click)="cancelEdit()" class="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+                      </td>
+                    </ng-container>
+                    <ng-template #searchViewRow>
+                      <td class="px-3 py-2 text-sm text-gray-900 font-medium">{{ row.memberName }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700 font-mono">{{ row.depositMonth }}/{{ row.depositYear }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositDate }}</td>
+                      <td class="px-3 py-2 text-sm font-semibold text-gray-900 text-right font-mono">{{ row.amount | number:'1.2-2' }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700 text-right font-mono">{{ row.sharesCovered || 1 }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositedByName }}</td>
+                      <td class="px-3 py-2 text-sm text-gray-500 truncate max-w-xs" [title]="row.notes">{{ row.notes || '—' }}</td>
+                      <td class="px-3 py-2 text-sm">
+                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
+                              [ngClass]="{ 'bg-green-100 text-green-800': row.status === 'ACTIVE', 'bg-gray-200 text-gray-700': row.status === 'INACTIVE', 'bg-red-100 text-red-800': row.status === 'DELETED' }">
+                          {{ row.status }}
+                        </span>
+                      </td>
+                      <td class="px-3 py-2 text-right whitespace-nowrap" *ngIf="isAdmin">
+                        <button (click)="startSearchEdit(row)" class="text-sm text-primary-600 hover:text-primary-800 mr-2 font-medium">Edit</button>
+                        <button (click)="deleteSearchRow(row)" class="text-sm text-red-600 hover:text-red-800 font-medium">Delete</button>
+                      </td>
+                    </ng-template>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="bg-gray-50">
+                    <td [attr.colspan]="3" class="px-3 py-2 text-xs font-semibold text-gray-700 text-right">Family subtotal</td>
+                    <td class="px-3 py-2 text-sm font-bold text-primary-700 text-right font-mono">{{ g.total | number:'1.2-2' }}</td>
+                    <td [attr.colspan]="isAdmin ? 5 : 4"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- Mobile stacked card view (per family) -->
+            <div class="sm:hidden divide-y divide-gray-100">
+              <div *ngFor="let row of g.rows; trackBy: trackByGuid" class="p-3 space-y-2">
+                <ng-container *ngIf="editing && editing.guid === row.guid; else mobileViewRow">
+                  <div class="text-sm font-medium text-gray-900">{{ row.memberName }}</div>
+                  <div class="text-xs text-gray-500">{{ row.depositMonth }}/{{ row.depositYear }} · {{ row.depositDate }}</div>
+                  <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-500 w-16">Amount:</label>
+                    <input type="number" [value]="editForm.value.amount"
+                           (input)="editForm.patchValue({ amount: $any($event.target).value })"
+                           class="flex-1 rounded-md border-gray-300 text-sm border px-2 py-1"/>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-500 w-16">Notes:</label>
+                    <input type="text" [value]="editForm.value.notes"
+                           (input)="editForm.patchValue({ notes: $any($event.target).value })"
+                           class="flex-1 rounded-md border-gray-300 text-sm border px-2 py-1"/>
+                  </div>
+                  <div class="flex justify-end gap-2 pt-1" *ngIf="isAdmin">
+                    <button (click)="saveSearchEdit()" class="text-xs text-green-600 font-semibold">Save</button>
+                    <button (click)="cancelEdit()" class="text-xs text-gray-500">Cancel</button>
+                  </div>
+                </ng-container>
+                <ng-template #mobileViewRow>
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                      <p class="text-sm font-semibold text-gray-900 truncate">{{ row.memberName }}</p>
+                      <p class="text-xs text-gray-500">{{ row.depositMonth }}/{{ row.depositYear }} · {{ row.depositDate }}</p>
+                      <p class="text-xs text-gray-500">By: {{ row.depositedByName }} · Shares: {{ row.sharesCovered || 1 }}</p>
+                      <p *ngIf="row.notes" class="text-xs text-gray-500 mt-1 break-words">📝 {{ row.notes }}</p>
+                      <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                            [ngClass]="{ 'bg-green-100 text-green-800': row.status === 'ACTIVE', 'bg-gray-200 text-gray-700': row.status === 'INACTIVE', 'bg-red-100 text-red-800': row.status === 'DELETED' }">
+                        {{ row.status }}
+                      </span>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-base font-bold text-primary-700 font-mono">{{ row.amount | number:'1.2-2' }}</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-end gap-3 pt-1" *ngIf="isAdmin">
+                    <button (click)="startSearchEdit(row)" class="text-xs text-primary-600 font-semibold">Edit</button>
+                    <button (click)="deleteSearchRow(row)" class="text-xs text-red-600 font-semibold">Delete</button>
+                  </div>
+                </ng-template>
+              </div>
+              <div class="bg-gray-50 px-3 py-2 flex justify-between items-center">
+                <span class="text-xs font-semibold text-gray-700">Family subtotal</span>
+                <span class="text-sm font-bold text-primary-700 font-mono">{{ g.total | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Grand total -->
+        <div class="flex justify-between sm:justify-end items-center gap-3 pt-3 border-t-2 border-gray-200">
+          <span class="text-sm font-semibold text-gray-700">Grand total</span>
+          <span class="text-xl font-bold text-primary-700 font-mono">{{ searchGrandTotal | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <p *ngIf="groupedResults.length === 0 && !searchLoading && !searchError" class="text-sm text-gray-500 mt-2 text-center py-8">No deposits match your filters.</p>
     </div>
-
-    <p *ngIf="groupedResults.length === 0 && !searchLoading && !searchError" class="text-sm text-gray-500 mt-2">
-      No deposits match your filters.
-    </p>
   </div>
-
-  </div>
+</div>
