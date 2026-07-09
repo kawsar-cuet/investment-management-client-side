@@ -32,6 +32,11 @@ export interface Deposit {
   status?: string;
   createdDate?: string;
   updatedDate?: string;
+  /**
+   * Backend revision UUID. Required for PUT /api/deposits/{guid}.
+   * Populated by getById(); search-result rows do not include it.
+   */
+  revision?: string;
 }
 
 export interface CreateDepositRequest {
@@ -47,11 +52,60 @@ export interface CreateDepositRequest {
 }
 
 export interface FamilyBulkDepositRequest {
+  groupId?: string;
   familyId: string;
   depositedById: string;
-  amountPerShare: number;
+  totalAmount: number;
   depositMonth: number;
   depositYear: number;
   depositDate: string;       // YYYY-MM-DD
-  createdBySubjectGuid: string;
+  notes?: string;
+  createdBySubjectGuid?: string;
+}
+
+export interface FamilyBulkDepositPreviewRow {
+  memberId: string;
+  fullName: string;
+  shareCount: number;
+  isFamilyHead: boolean;
+  amount: number;
+}
+
+export interface FamilyBulkDepositPreview {
+  familyId: string;
+  totalAmount: number;
+  sumOfShares: number;
+  perShare: number;
+  rows: FamilyBulkDepositPreviewRow[];
+}
+
+/**
+ * Flat row returned by GET /api/deposits/search.
+ * Member and family names are denormalized on the server so the UI can
+ * render directly without an extra round-trip per row.
+ */
+export interface DepositSearchResult {
+  guid: string;
+  memberId: string;
+  memberName: string;
+  familyId: string;
+  familyName: string;
+  depositedById: string;
+  depositedByName: string;
+  amount: number | string;
+  sharesCovered?: number;
+  depositMonth?: number;
+  depositYear?: number;
+  depositDate?: string;
+  notes?: string;
+  status?: string;
+}
+
+export interface DepositSearchQuery {
+  keyword?: string;
+  memberId?: string;
+  familyId?: string;
+  month?: number;
+  year?: number;
+  status?: string;
 }

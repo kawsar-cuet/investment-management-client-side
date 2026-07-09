@@ -1,153 +1,163 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subject, catchError, of, takeUntil } from 'rxjs';
 import { FamilyService } from '@core/services/family.service';
-import { Family } from '@core/models';
+import { FriendGroupService } from '@core/services/friend-group.service';
+import { AuthService } from '@core/services/auth.service';
+import { Family, FriendGroup } from '@core/models';
+import { extractHttpErrorMessage } from '@core/utils/http-error';
 
 @Component({
   selector: 'app-families-list',
   templateUrl: './families-list.component.html',
   styleUrls: ['./families-list.component.scss']
 })
-export class FamiliesListComponent implements OnInit {
+export class FamiliesListComponent implements OnInit, OnDestroy {
   families: Family[] = [];
+  groups: FriendGroup[] = [];
+  groupNameByGuid: { [guid: string]: string } = {};
+
   loading = false;
   error = '';
   success = '';
-
-  // Track families the user has created / looked up
-  knownGuids: string[] = [];
+  isAdmin = false;
 
   createForm!: FormGroup;
-  lookupForm!: FormGroup;
-  groupLookupForm!: FormGroup;
-  editing: Family | null = null;
-  editForm!: FormGroup;
+  showCreate = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
-    private familyService: FamilyService
+    private router: Router,
+    private familyService: FamilyService,
+    private friendGroupService: FriendGroupService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
     this.createForm = this.fb.group({
-      groupGuid: [''],
+      groupId: ['', Validators.required],
       familyName: ['', Validators.required],
       description: ['']
     });
-    this.lookupForm = this.fb.group({
-      guid: ['', Validators.required]
-    });
-    this.groupLookupForm = this.fb.group({
-      groupId: ['', Validators.required]
-    });
-    this.editForm = this.fb.group({
-      familyName: ['', Validators.required],
-      description: ['']
-    });
+
+    this.auth.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.isAdmin = (user?.role ?? '').toUpperCase() === 'ADMIN';
+        if (!this.isAdmin) this.showCreate = false;
+      });
+
+    // Load groups first so the dropdown is populated even if /api/families fails.
+    // The two requests are now independent — a 500 on families will NOT blank
+    // the group dropdown.
+    this.loadGroups();
+    this.loadFamilies();
   }
 
-  loadKnownFamilies(): void {
-    this.loading = true;
-    this.error = '';
-    if (this.knownGuids.length === 0) {
-      this.loading = false;
-      this.families = [];
-      return;
-    }
-    const collected: Family[] = [];
-    let done = 0;
-    let fails = 0;
-    this.knownGuids.forEach(id => {
-      this.familyService.getById(id).subscribe({
-        next: f => collected.push(f),
-        error: () => fails++,
-        complete: () => {
-          done++;
-          if (done === this.knownGuids.length) {
-            this.families = collected;
-            this.loading = false;
-            if (fails > 0) this.error = `${fails} family(ies) could not be loaded`;
-          }
-        }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /** Load family groups and populate the create-form dropdown. */
+  loadGroups(): void {
+    this.friendGroupService.list()
+      .pipe(
+        catchError(err => {
+          const msg = extractHttpErrorMessage(err, 'Failed to load family groups');
+          this.error = this.error ? `${this.error}; ${msg}` : msg;
+          return of([] as FriendGroup[]);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(groups => {
+        this.groups = groups;
+        this.groupNameByGuid = groups.reduce((acc, g) => {
+          acc[g.guid] = g.groupName;
+          return acc;
+        }, {} as { [k: string]: string });
+        this.applyFirstGroupDefault();
       });
-    });
+  }
+
+  /** Load families for the listing table. */
+  loadFamilies(): void {
+    this.loading = true;
+    this.familyService.list()
+      .pipe(
+        catchError(err => {
+          const msg = extractHttpErrorMessage(err, 'Failed to load families');
+          this.error = this.error ? `${this.error}; ${msg}` : msg;
+          return of([] as Family[]);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(families => {
+        this.families = families;
+        this.loading = false;
+      });
+  }
+
+  /** Reload both lists (used after create). */
+  load(): void {
+    this.error = '';
+    this.loading = true;
+    this.loadGroups();
+    this.loadFamilies();
+  }
+
+  /** If the create form has no group selected yet, default to the first group. */
+  private applyFirstGroupDefault(): void {
+    if (this.groups.length === 0) return;
+    const current = this.createForm.get('groupId')?.value;
+    if (!current) {
+      this.createForm.patchValue({ groupId: this.groups[0].guid });
+    }
+  }
+
+  groupNameFor(f: Family): string {
+    if (!f.groupId) return '—';
+    return this.groupNameByGuid[f.groupId] || this.shortId(f.groupId);
+  }
+
+  shortId(id: string): string {
+    return id ? `${id.substring(0, 8)}…` : '';
+  }
+
+  openCreate(): void {
+    if (!this.isAdmin) return;
+    this.showCreate = true;
+    // Always re-apply first-group default when the panel opens.
+    this.applyFirstGroupDefault();
+  }
+
+  closeCreate(): void {
+    this.showCreate = false;
+    this.createForm.reset({ groupId: this.groups.length > 0 ? this.groups[0].guid : '' });
   }
 
   create(): void {
     if (this.createForm.invalid) return;
-    const payload: any = { ...this.createForm.value };
-    if (!payload.groupGuid) delete payload.groupGuid;
-    this.familyService.create(payload).subscribe({
+    const v = this.createForm.value;
+    this.familyService.create({
+      groupId: v.groupId,
+      familyName: v.familyName,
+      description: v.description
+    }).subscribe({
       next: f => {
-        this.success = `Family created: ${f.familyName}`;
-        if (f.guid && !this.knownGuids.includes(f.guid)) this.knownGuids.push(f.guid);
-        this.createForm.reset();
-        this.loadKnownFamilies();
+        this.success = `Family "${f.familyName}" created`;
+        this.showCreate = false;
+        this.createForm.reset({ groupId: this.groups.length > 0 ? this.groups[0].guid : '' });
+        this.load();
       },
-      error: err => (this.error = err?.message || 'Failed to create family')
+      error: err => (this.error = extractHttpErrorMessage(err, 'Failed to create'))
     });
   }
 
-  lookup(): void {
-    if (this.lookupForm.invalid) return;
-    const id = this.lookupForm.value.guid.trim();
-    this.familyService.getById(id).subscribe({
-      next: f => {
-        if (!this.knownGuids.includes(f.guid)) this.knownGuids.push(f.guid);
-        this.success = `Found: ${f.familyName}`;
-        this.loadKnownFamilies();
-      },
-      error: () => (this.error = 'Family not found with that ID')
-    });
-  }
-
-  findByGroup(): void {
-    if (this.groupLookupForm.invalid) return;
-    const groupId = this.groupLookupForm.value.groupId.trim();
-    this.error = '';
-    this.familyService.getByGroup(groupId).subscribe({
-      next: list => {
-        list.forEach(f => { if (!this.knownGuids.includes(f.guid)) this.knownGuids.push(f.guid); });
-        this.success = `Found ${list.length} families in that group`;
-        this.loadKnownFamilies();
-      },
-      error: () => (this.error = 'No families found or group does not exist')
-    });
-  }
-
-  startEdit(f: Family): void {
-    this.editing = { ...f };
-    this.editForm.patchValue({ familyName: f.familyName, description: f.description || '' });
-  }
-
-  cancelEdit(): void {
-    this.editing = null;
-    this.editForm.reset();
-  }
-
-  saveEdit(): void {
-    if (!this.editing || this.editForm.invalid) return;
-    const payload = { ...this.editing, ...this.editForm.value };
-    this.familyService.update(this.editing.guid, payload).subscribe({
-      next: () => {
-        this.success = 'Family updated';
-        this.editing = null;
-        this.editForm.reset();
-        this.loadKnownFamilies();
-      },
-      error: () => (this.error = 'Failed to update family')
-    });
-  }
-
-  delete(f: Family): void {
-    if (!confirm(`Delete family "${f.familyName}"?`)) return;
-    this.familyService.delete(f.guid).subscribe({
-      next: () => {
-        this.knownGuids = this.knownGuids.filter(x => x !== f.guid);
-        this.loadKnownFamilies();
-        this.success = 'Family deleted';
-      },
-      error: () => (this.error = 'Failed to delete family')
-    });
+  openDetails(f: Family): void {
+    this.router.navigate(['/families', f.guid]);
   }
 }

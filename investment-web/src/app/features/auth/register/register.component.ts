@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { extractHttpErrorMessage } from '@core/utils/http-error';
 
 @Component({
   selector: 'app-register',
@@ -29,12 +30,26 @@ export class RegisterComponent implements OnInit {
 
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, this.emailOrPhoneValidator]],
       fullName: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       terms: [false, Validators.requiredTrue]
     }, { validators: this.passwordMatchValidator });
+  }
+
+  /**
+   * Accepts either a real email address OR a phone number.
+   * Email pattern is intentionally simple; phone accepts digits, spaces,
+   * dashes, parentheses, and a leading +.
+   */
+  emailOrPhoneValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const value = String(control.value).trim();
+    if (!value) return null;
+    const emailRe = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const phoneRe = /^\+?[0-9](?:[0-9\s\-()]{6,28}[0-9])$/;
+    return emailRe.test(value) || phoneRe.test(value) ? null : { emailOrPhone: true };
   }
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -80,11 +95,7 @@ export class RegisterComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        const backendMsg =
-          err?.error?.message ||
-          err?.message ||
-          'Registration failed. Please try again.';
-        this.error = backendMsg;
+        this.error = extractHttpErrorMessage(err, 'Registration failed. Please try again.');
         console.error('Registration error:', err);
       }
     });

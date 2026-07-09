@@ -1,261 +1,463 @@
-<div class="space-y-6">
-  <div class="flex justify-between items-center">
-    <div>
-      <h1 class="text-3xl font-heading font-bold text-gray-900">Deposits</h1>
-      <p class="mt-2 text-gray-600">Record and review member deposits.</p>
-    </div>
-    <button (click)="showBulk = !showBulk"
-            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-600 hover:bg-secondary-700">
-      {{ showBulk ? 'Single Deposit' : 'Family Bulk Deposit' }}
-    </button>
+<div class="px-6 py-8 max-w-7xl mx-auto">
+  <!-- HEADER -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-heading font-bold text-gray-900">Deposits</h1>
+    <p class="text-sm text-gray-500 mt-1">
+      Record a single-member deposit or distribute a family bulk deposit across all members based on share count.
+    </p>
   </div>
 
-  <div *ngIf="success" class="rounded-md bg-green-50 p-4 border border-green-200">
-    <p class="text-sm text-green-700">{{ success }}</p>
+  <!-- ALERTS -->
+  <div *ngIf="error" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+    {{ error }}
   </div>
-  <div *ngIf="error" class="rounded-md bg-red-50 p-4 border border-red-200">
-    <p class="text-sm text-red-700">{{ error }}</p>
+  <div *ngIf="success" class="mb-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+    {{ success }}
   </div>
 
-  <!-- Create form (single) -->
-  <div *ngIf="!showBulk" class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">New Deposit</h2>
-    <form [formGroup]="createForm" (ngSubmit)="create()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <!-- TABS -->
+  <div class="border-b border-gray-200 mb-6">
+    <nav class="-mb-px flex space-x-8">
+      <button type="button"
+              (click)="activeTab = 'single'"
+              [class.border-primary-500]="activeTab === 'single'"
+              [class.text-primary-600]="activeTab === 'single'"
+              [class.border-transparent]="activeTab !== 'single'"
+              [class.text-gray-500]="activeTab !== 'single'"
+              class="py-3 px-1 border-b-2 font-medium text-sm hover:text-primary-600">
+        Single Member Deposit
+      </button>
+      <button type="button"
+              (click)="activeTab = 'bulk'"
+              [class.border-primary-500]="activeTab === 'bulk'"
+              [class.text-primary-600]="activeTab === 'bulk'"
+              [class.border-transparent]="activeTab !== 'bulk'"
+              [class.text-gray-500]="activeTab !== 'bulk'"
+              class="py-3 px-1 border-b-2 font-medium text-sm hover:text-primary-600">
+        Family Bulk Deposit
+      </button>
+      <button type="button"
+              (click)="activeTab = 'all'"
+              [class.border-primary-500]="activeTab === 'all'"
+              [class.text-primary-600]="activeTab === 'all'"
+              [class.border-transparent]="activeTab !== 'all'"
+              [class.text-gray-500]="activeTab !== 'all'"
+              class="py-3 px-1 border-b-2 font-medium text-sm hover:text-primary-600">
+        All Deposits
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================== SINGLE DEPOSIT ================== -->
+  <div *ngIf="activeTab === 'single'" class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Single Member Deposit</h2>
+    <p class="text-sm text-gray-500 mb-4">
+      Record a deposit for one specific member of a family.
+    </p>
+    <form [formGroup]="singleForm" (ngSubmit)="submitSingle()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <!-- Family Group -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Member GUID</label>
-        <input type="text" formControlName="memberGuid"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+        <label class="block text-sm font-medium text-gray-700">Family Group *</label>
+        <select formControlName="groupId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option value="">— select group —</option>
+          <option *ngFor="let g of groups" [value]="g.guid">{{ g.groupName }}</option>
+        </select>
       </div>
+
+      <!-- Family -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Family GUID</label>
-        <input type="text" formControlName="familyGuid"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+        <label class="block text-sm font-medium text-gray-700">Family *</label>
+        <select formControlName="familyId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option value="">— select family —</option>
+          <option *ngFor="let f of familiesByGroup" [value]="f.guid">{{ f.familyName }}</option>
+        </select>
       </div>
+
+      <!-- Member -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Member *</label>
+        <select formControlName="memberId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option value="">— select member —</option>
+          <option *ngFor="let m of membersByFamily" [value]="m.guid">
+            {{ m.fullName }}{{ m.isFamilyHead ? ' (head)' : '' }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Amount -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Amount *</label>
-        <input type="number" formControlName="amount" min="0"
+        <input type="number" formControlName="amount" min="1" step="0.01"
                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Shares Covered</label>
-        <input type="number" formControlName="sharesCovered" min="0"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Deposit Date</label>
-        <input type="date" formControlName="depositDate"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Notes</label>
-        <input type="text" formControlName="notes"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div class="sm:col-span-3">
-        <button type="submit" [disabled]="createForm.invalid"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
-          Submit Deposit
-        </button>
-      </div>
-    </form>
-  </div>
 
-  <!-- Create form (family bulk) -->
-  <div *ngIf="showBulk" class="bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Family Bulk Deposit</h2>
-    <p class="text-sm text-gray-500 mb-4">Creates one deposit for every member of the family for the given month.</p>
-    <form [formGroup]="bulkForm" (ngSubmit)="createBulk()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Family ID *</label>
-        <input type="text" formControlName="familyId"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Deposited By (family head) *</label>
-        <input type="text" formControlName="depositedById"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Amount per Share *</label>
-        <input type="number" formControlName="amountPerShare" min="0"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-      </div>
+      <!-- Month -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Month *</label>
-        <input type="number" formControlName="depositMonth" min="1" max="12"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+        <select formControlName="depositMonth"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+        </select>
       </div>
+
+      <!-- Year -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Year *</label>
-        <input type="number" formControlName="depositYear" min="2000" max="2100"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+        <select formControlName="depositYear"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+        </select>
       </div>
+
+      <!-- Date -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Deposit Date *</label>
         <input type="date" formControlName="depositDate"
                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
       </div>
-      <div class="sm:col-span-3">
-        <label class="block text-sm font-medium text-gray-700">Created By Subject GUID *</label>
-        <input type="text" formControlName="createdBySubjectGuid"
-               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+
+      <!-- Notes -->
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700">Notes</label>
+        <input type="text" formControlName="notes"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               placeholder="optional"/>
       </div>
-      <div class="sm:col-span-3">
-        <button type="submit" [disabled]="bulkForm.invalid"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-600 hover:bg-secondary-700 disabled:opacity-50">
-          Create Bulk Deposit
+
+      <div class="sm:col-span-3" *ngIf="isAdmin">
+        <button type="submit" [disabled]="singleForm.invalid"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
+          Record Single Deposit
         </button>
+      </div>
+      <div class="sm:col-span-3" *ngIf="!isAdmin">
+        <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+          Read-only — only ADMIN role can record deposits.
+        </p>
       </div>
     </form>
   </div>
 
-  <!-- Lookup panels -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Lookups</h2>
-      <div class="space-y-4">
-        <form [formGroup]="lookupForm" (ngSubmit)="lookup()" class="flex items-end space-x-2">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700">By Deposit GUID</label>
-            <input type="text" formControlName="guid"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-          <button type="submit" [disabled]="lookupForm.invalid"
-                  class="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">Find</button>
-        </form>
-        <form [formGroup]="memberLookupForm" (ngSubmit)="findByMember()" class="flex items-end space-x-2">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700">By Member GUID</label>
-            <input type="text" formControlName="memberId"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-          <button type="submit" [disabled]="memberLookupForm.invalid"
-                  class="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">List</button>
-        </form>
-        <form [formGroup]="familyLookupForm" (ngSubmit)="findByFamily()" class="flex items-end space-x-2">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700">By Family GUID</label>
-            <input type="text" formControlName="familyId"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-          <button type="submit" [disabled]="familyLookupForm.invalid"
-                  class="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">List</button>
-        </form>
-        <form [formGroup]="periodForm" (ngSubmit)="findByPeriod()" class="flex items-end space-x-2">
-          <div class="w-1/3">
-            <label class="block text-sm font-medium text-gray-700">Month</label>
-            <input type="number" formControlName="month" min="1" max="12"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-          <div class="w-1/3">
-            <label class="block text-sm font-medium text-gray-700">Year</label>
-            <input type="number" formControlName="year" min="2000" max="2100"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-          <button type="submit" [disabled]="periodForm.invalid"
-                  class="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">Find</button>
-        </form>
+  <!-- ================== FAMILY BULK DEPOSIT ================== -->
+  <div *ngIf="activeTab === 'bulk'" class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-lg font-heading font-semibold text-gray-900 mb-2">Family Bulk Deposit</h2>
+    <p class="text-sm text-gray-500 mb-4">
+      Enter the total family deposit. It will be split across all family members
+      <strong>proportionally by share count</strong>. For example, with 4 members each holding 1 share and a total of 4000,
+      each member receives 1000.
+    </p>
+    <form [formGroup]="bulkForm" (ngSubmit)="submitBulk()" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <!-- Family Group -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Family Group *</label>
+        <select formControlName="groupId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option value="">— select group —</option>
+          <option *ngFor="let g of groups" [value]="g.guid">{{ g.groupName }}</option>
+        </select>
+      </div>
+
+      <!-- Family -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Family *</label>
+        <select formControlName="familyId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option value="">— select family —</option>
+          <option *ngFor="let f of familiesByGroup" [value]="f.guid">{{ f.familyName }}</option>
+        </select>
+        <p *ngIf="familiesByGroup.length === 0 && bulkForm.get('groupId')?.value" class="mt-1 text-xs text-amber-600">
+          No families in the selected group.
+        </p>
+      </div>
+
+      <!-- Total Amount -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Total Deposit Amount *</label>
+        <input type="number" formControlName="totalAmount" min="0" step="0.01"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               placeholder="0"/>
+        <p class="mt-1 text-xs text-gray-500">Enter a positive amount. Will be split by share count.</p>
+      </div>
+
+      <!-- Month -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Month *</label>
+        <select formControlName="depositMonth"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+        </select>
+      </div>
+
+      <!-- Year -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Year *</label>
+        <select formControlName="depositYear"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+        </select>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Deposit Date *</label>
+        <input type="date" formControlName="depositDate"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
+      </div>
+
+      <!-- Notes -->
+      <div class="sm:col-span-3">
+        <label class="block text-sm font-medium text-gray-700">Notes</label>
+        <input type="text" formControlName="notes"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               placeholder="optional"/>
+      </div>
+    </form>
+
+    <!-- LIVE PREVIEW -->
+    <div class="mt-6 border-t pt-4">
+      <h3 class="text-md font-semibold text-gray-900 mb-2">Distribution Preview</h3>
+      <p *ngIf="previewing" class="text-sm text-gray-500">Calculating split…</p>
+      <p *ngIf="previewError" class="text-sm text-red-600">{{ previewError }}</p>
+      <p *ngIf="!preview && !previewing && !previewError" class="text-sm text-gray-500">
+        Select a family and enter a total amount to see the per-member split.
+      </p>
+      <div *ngIf="preview" class="overflow-x-auto">
+        <div class="flex gap-4 text-sm text-gray-700 mb-2">
+          <div><strong>Total amount:</strong> {{ preview.totalAmount }}</div>
+          <div><strong>Total shares:</strong> {{ preview.sumOfShares }}</div>
+          <div><strong>Per share:</strong> {{ preview.perShare }}</div>
+        </div>
+        <table class="min-w-full divide-y divide-gray-200 border">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shares</th>
+              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let row of preview.rows">
+              <td class="px-3 py-2 text-sm text-gray-900">
+                {{ row.fullName }}
+                <span *ngIf="row.isFamilyHead" class="ml-1 text-xs text-primary-600">(head)</span>
+              </td>
+              <td class="px-3 py-2 text-sm text-gray-700">{{ row.shareCount }}</td>
+              <td class="px-3 py-2 text-sm font-semibold text-gray-900">{{ row.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div class="bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-lg font-heading font-semibold text-gray-900 mb-4">Family Monthly Total</h2>
-      <form [formGroup]="familyTotalForm" (ngSubmit)="findFamilyTotal()" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Family GUID *</label>
-          <input type="text" formControlName="familyId"
-                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Month *</label>
-            <input type="number" formControlName="month" min="1" max="12"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Year *</label>
-            <input type="number" formControlName="year" min="2000" max="2100"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"/>
-          </div>
-        </div>
-        <button type="submit" [disabled]="familyTotalForm.invalid"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
-          Get Total
-        </button>
-        <div *ngIf="familyTotal !== null" class="mt-4 p-4 bg-primary-50 rounded-md">
-          <p class="text-sm text-gray-600">Total collected</p>
-          <p class="text-2xl font-bold font-mono text-primary-700">{{ familyTotal }}</p>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-      <h2 class="text-lg font-heading font-semibold text-gray-900">Deposit Records</h2>
-      <button (click)="loadKnown()"
-              class="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50">
-        Refresh
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+      <!-- PRIMARY ACTION: Create button (ADMIN only; disabled until valid preview + amount > 0) -->
+      <button type="button" *ngIf="isAdmin" (click)="submitBulk()"
+              [disabled]="!canSubmitBulk"
+              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-600 hover:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        Create {{ preview?.rows?.length || 0 }} Deposit{{ (preview?.rows?.length || 0) === 1 ? '' : 's' }}
       </button>
-    </div>
+      <span *ngIf="!isAdmin" class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+        Read-only — only ADMIN role can submit bulk deposits.
+      </span>
 
-    <div *ngIf="loading" class="p-6 text-center text-gray-500">Loading deposits...</div>
-    <div *ngIf="!loading && deposits.length === 0" class="p-6 text-center text-gray-500">
-      No deposits loaded. Submit one or use a lookup above.
-    </div>
+      <!-- RESET: only visible after a successful submission -->
+      <button type="button" *ngIf="bulkJustSubmitted" (click)="resetBulk()"
+              class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+        Reset
+      </button>
 
-    <table *ngIf="!loading && deposits.length > 0" class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Family</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month/Year</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let d of deposits">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 font-mono">{{ d.amount }}</td>
-          <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ (d.memberGuid || '-') | slice:0:8 }}...</td>
-          <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ (d.familyGuid || '-') | slice:0:8 }}...</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ d.depositMonth }}/{{ d.depositYear }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ d.depositDate }}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">{{ d.notes || '-' }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-            <button (click)="startEdit(d)" class="text-primary-600 hover:text-primary-900">Edit</button>
-            <button (click)="delete(d)" class="text-red-600 hover:text-red-900">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="editing" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-      <h3 class="text-lg font-semibold mb-4">Edit Deposit</h3>
-      <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Amount</label>
-            <input type="number" formControlName="amount" min="0"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border px-3 py-2"/>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Notes</label>
-            <input type="text" formControlName="notes"
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border px-3 py-2"/>
-          </div>
-        </div>
-        <div class="mt-6 flex justify-end space-x-3">
-          <button type="button" (click)="cancelEdit()"
-                  class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
-          <button type="submit" [disabled]="editForm.invalid"
-                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">Save</button>
-        </div>
-      </form>
+      <p *ngIf="!selectedFamilyHeadId" class="text-xs text-amber-600">
+        The selected family has no family head, so bulk deposit cannot proceed.
+      </p>
+      <p *ngIf="selectedFamilyHeadId && bulkForm.get('totalAmount')?.value <= 0"
+         class="text-xs text-amber-600">
+        Enter a total amount greater than 0 to preview and submit.
+      </p>
     </div>
   </div>
-</div>
+
+  <!-- ================== ALL DEPOSITS ================== -->
+  <div *ngIf="activeTab === 'all'" class="bg-white shadow-md rounded-lg p-6">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="text-lg font-heading font-semibold text-gray-900">All Deposits</h2>
+      <div class="flex items-center gap-2 text-sm">
+        <span *ngIf="!searchLoading && searchResults.length > 0" class="text-gray-600">
+          {{ searchResults.length }} record{{ searchResults.length === 1 ? '' : 's' }} ·
+          <strong class="text-primary-700">Total {{ searchGrandTotal | number:'1.2-2' }}</strong>
+        </span>
+      </div>
+    </div>
+    <p class="text-sm text-gray-500 mb-4">
+      Search all deposits by member name, family name, or notes. Admins see Create / Edit / Delete controls elsewhere;
+      everyone can view, search, and read totals here.
+    </p>
+
+    <!-- SEARCH BAR -->
+    <form [formGroup]="searchForm" class="grid grid-cols-1 gap-4 sm:grid-cols-12 mb-4">
+      <!-- Keyword -->
+      <div class="sm:col-span-6">
+        <label class="block text-sm font-medium text-gray-700">Search (member name, family name, notes)</label>
+        <input type="text" formControlName="keyword"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2"
+               placeholder="e.g. Samad, Bilkis, January rent"/>
+      </div>
+      <!-- Month -->
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700">Month</label>
+        <select formControlName="month"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option [ngValue]="''">All</option>
+          <option *ngFor="let m of months" [ngValue]="m">{{ m }}</option>
+        </select>
+      </div>
+      <!-- Year -->
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700">Year</label>
+        <select formControlName="year"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option [ngValue]="''">All</option>
+          <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+        </select>
+      </div>
+      <!-- Status -->
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700">Status</label>
+        <select formControlName="status"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border px-3 py-2">
+          <option [ngValue]="'ACTIVE'">Active</option>
+          <option [ngValue]="'INACTIVE'">Inactive</option>
+          <option [ngValue]="'DELETED'">Deleted</option>
+          <option [ngValue]="''">All (incl. deleted)</option>
+        </select>
+      </div>
+      <!-- Buttons row -->
+      <div class="sm:col-span-12 flex flex-wrap gap-2">
+        <button type="button" (click)="runSearch()"
+                class="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+          Search
+        </button>
+        <button type="button" (click)="clearSearch()"
+                class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+          Reset
+        </button>
+        <span *ngIf="searchLoading" class="text-sm text-gray-500 self-center">Searching…</span>
+      </div>
+    </form>
+
+    <div *ngIf="searchError" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+      {{ searchError }}
+    </div>
+
+    <!-- RESULTS — GROUPED BY FAMILY -->
+    <div *ngIf="groupedResults.length > 0" class="space-y-4">
+      <div *ngFor="let g of groupedResults; trackBy: trackByGuid"
+           class="border rounded-lg overflow-hidden">
+        <!-- Family header -->
+        <button type="button" (click)="toggleFamily(g.familyId)"
+                class="w-full flex items-center justify-between bg-gray-50 px-4 py-3 text-left hover:bg-gray-100">
+          <span class="font-semibold text-gray-900">
+            {{ g.familyName }}
+            <span class="ml-2 text-xs text-gray-500">({{ g.rows.length }})</span>
+          </span>
+          <span class="flex items-center gap-3">
+            <span class="text-sm font-semibold text-primary-700">
+              {{ g.total | number:'1.2-2' }}
+            </span>
+            <span class="text-gray-400">{{ isFamilyExpanded(g.familyId) ? '▾' : '▸' }}</span>
+          </span>
+        </button>
+
+        <!-- Per-family table -->
+        <div *ngIf="isFamilyExpanded(g.familyId)" class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-white">
+              <tr>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Period</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shares</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Deposited By</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase" *ngIf="isAdmin">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+              <tr *ngFor="let row of g.rows; trackBy: trackByGuid">
+                <ng-container *ngIf="editing && editing.guid === row.guid; else searchViewRow">
+                  <!-- edit mode for search-result row -->
+                  <td class="px-3 py-2 text-sm text-gray-900">{{ row.memberName }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositMonth }}/{{ row.depositYear }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositDate }}</td>
+                  <td class="px-3 py-2">
+                    <input type="number" [value]="editForm.value.amount"
+                           (input)="editForm.patchValue({ amount: $any($event.target).value })"
+                           class="w-24 rounded-md border-gray-300 sm:text-sm border px-2 py-1"/>
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.sharesCovered || 1 }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositedByName }}</td>
+                  <td class="px-3 py-2">
+                    <input type="text" [value]="editForm.value.notes"
+                           (input)="editForm.patchValue({ notes: $any($event.target).value })"
+                           class="w-full rounded-md border-gray-300 sm:text-sm border px-2 py-1"/>
+                  </td>
+                  <td class="px-3 py-2 text-sm">{{ row.status }}</td>
+                  <td class="px-3 py-2 text-right" *ngIf="isAdmin">
+                    <button (click)="saveSearchEdit()" class="text-sm text-green-600 hover:text-green-800 mr-2">Save</button>
+                    <button (click)="cancelEdit()" class="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+                  </td>
+                </ng-container>
+                <ng-template #searchViewRow>
+                  <td class="px-3 py-2 text-sm text-gray-900">{{ row.memberName }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositMonth }}/{{ row.depositYear }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositDate }}</td>
+                  <td class="px-3 py-2 text-sm font-semibold text-gray-900">{{ row.amount | number:'1.2-2' }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.sharesCovered || 1 }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-700">{{ row.depositedByName }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-500">{{ row.notes || '—' }}</td>
+                  <td class="px-3 py-2 text-sm">
+                    <span class="inline-block px-2 py-0.5 rounded-full text-xs"
+                          [class.bg-green-100]="row.status === 'ACTIVE'"
+                          [class.text-green-800]="row.status === 'ACTIVE'"
+                          [class.bg-gray-200]="row.status === 'INACTIVE'"
+                          [class.text-gray-700]="row.status === 'INACTIVE'"
+                          [class.bg-red-100]="row.status === 'DELETED'"
+                          [class.text-red-800]="row.status === 'DELETED'">
+                      {{ row.status }}
+                    </span>
+                  </td>
+                  <td class="px-3 py-2 text-right" *ngIf="isAdmin">
+                    <button (click)="startSearchEdit(row)" class="text-sm text-primary-600 hover:text-primary-800 mr-2">Edit</button>
+                    <button (click)="deleteSearchRow(row)" class="text-sm text-red-600 hover:text-red-800">Delete</button>
+                  </td>
+                </ng-template>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="bg-gray-50">
+                <td [attr.colspan]="isAdmin ? 3 : 3" class="px-3 py-2 text-xs font-semibold text-gray-700 text-right">Family subtotal</td>
+                <td class="px-3 py-2 text-sm font-bold text-primary-700">{{ g.total | number:'1.2-2' }}</td>
+                <td [attr.colspan]="isAdmin ? 5 : 4"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Grand total -->
+      <div class="flex justify-end items-center gap-3 pt-2 border-t">
+        <span class="text-sm text-gray-700">Grand total</span>
+        <span class="text-lg font-bold text-primary-700">{{ searchGrandTotal | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <p *ngIf="groupedResults.length === 0 && !searchLoading && !searchError" class="text-sm text-gray-500 mt-2">
+      No deposits match your filters.
+    </p>
+  </div>
+
+  </div>

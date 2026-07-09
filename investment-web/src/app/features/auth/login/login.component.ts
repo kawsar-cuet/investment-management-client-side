@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { extractHttpErrorMessage } from '@core/utils/http-error';
 
 @Component({
   selector: 'app-login',
@@ -59,11 +60,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        const backendMsg =
-          err?.error?.message ||
-          err?.message ||
-          'Invalid username or password';
-        this.error = backendMsg;
+        this.error = extractHttpErrorMessage(err, 'Invalid username or password');
         console.error('Login error:', err);
       }
     });

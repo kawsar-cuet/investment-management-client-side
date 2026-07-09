@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepositService } from '@core/services/deposit.service';
 import { Deposit } from '@core/models';
+import { extractHttpErrorMessage } from '@core/utils/http-error';
 
 @Component({
   selector: 'app-reports',
@@ -50,7 +51,7 @@ export class ReportsComponent implements OnInit {
         this.loading = false;
       },
       error: err => {
-        this.error = err?.message || 'Failed to load deposits';
+        this.error = extractHttpErrorMessage(err, 'Failed to load deposits');
         this.loading = false;
       }
     });

@@ -1,13 +1,23 @@
 export interface FamilyHdr {
   guid: string;
-  groupGuid?: string;
-  familyName: string;
-  familyHeadGuid?: string;
+  family_name?: string;
+  familyName?: string;
+  group_id?: string;
+  groupId?: string;
+  family_head_id?: string;
+  familyHeadId?: string;
+  total_shares?: number;
   totalShares?: number;
   description?: string;
-  status?: 'ACTIVE' | 'INACTIVE' | 'DELETED';
+  status?: 'ACTIVE' | 'INACTIVE' | 'DELETED' | string;
+  created_by_subject_guid?: string;
+  updated_by_subject_guid?: string;
+  created_date?: string;
   createdDate?: string;
+  updated_date?: string;
   updatedDate?: string;
+  revision?: string;
+  property_json?: { [k: string]: any };
 }
 
 export interface FamilyContainer {
@@ -16,9 +26,9 @@ export interface FamilyContainer {
 
 export interface Family {
   guid: string;
-  groupGuid?: string;
   familyName: string;
-  familyHeadGuid?: string;
+  groupId?: string;
+  familyHeadId?: string;
   totalShares?: number;
   description?: string;
   status?: string;
@@ -27,8 +37,7 @@ export interface Family {
 }
 
 export interface CreateFamilyRequest {
-  groupGuid?: string;
+  groupId?: string;
   familyName: string;
-  familyHeadGuid?: string;
   description?: string;
 }

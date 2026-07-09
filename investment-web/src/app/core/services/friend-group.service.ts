@@ -12,7 +12,13 @@ function wrap(payload: Partial<FriendGroup>): { friend_groups_hdr: Partial<Frien
 }
 
 function unwrap(c: FriendGroupContainer | FriendGroup): FriendGroup {
-  return ((c as FriendGroupContainer).friend_groups_hdr ?? (c as FriendGroup)) as FriendGroup;
+  const raw = ((c as FriendGroupContainer).friend_groups_hdr ?? (c as FriendGroup)) as any;
+  return {
+    ...raw,
+    groupName: raw.groupName ?? raw.group_name ?? '',
+    createdDate: raw.createdDate ?? raw.created_date,
+    updatedDate: raw.updatedDate ?? raw.updated_date
+  } as FriendGroup;
 }
 
 @Injectable({
@@ -23,7 +29,13 @@ export class FriendGroupService {
 
   constructor(private apiService: ApiService) {}
 
-  // Backend has no GET /api/groups (no list endpoint), only POST, PUT, DELETE, GET /{id}
+  // GET /api/groups → list all family groups (any authenticated user)
+  list(): Observable<FriendGroup[]> {
+    return this.apiService.get<FriendGroupContainer[]>(this.endpoint).pipe(
+      map(list => (list ?? []).map(unwrap))
+    );
+  }
+
   getById(id: string): Observable<FriendGroup> {
     return this.apiService.get<FriendGroupContainer>(`${this.endpoint}/${id}`).pipe(
       map(unwrap)

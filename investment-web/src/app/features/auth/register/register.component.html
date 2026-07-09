@@ -42,20 +42,21 @@
           </div>
         </div>
 
-        <!-- Email -->
+        <!-- Email or Phone -->
         <div class="form-group">
-          <label for="email">Email Address <span class="required">*</span></label>
+          <label for="email">Email or Phone Number <span class="required">*</span></label>
           <input
             id="email"
-            type="email"
+            type="text"
             formControlName="email"
             class="form-input"
             [class.error]="f['email'].invalid && f['email'].touched"
-            placeholder="your.email@example.com"
+            placeholder="you@example.com  or  +8801712345678"
+            autocomplete="off"
           />
           <div *ngIf="f['email'].invalid && f['email'].touched" class="error-message">
-            <span *ngIf="f['email'].errors?.['required']">Email is required</span>
-            <span *ngIf="f['email'].errors?.['email']">Please enter a valid email</span>
+            <span *ngIf="f['email'].errors?.['required']">Email or phone number is required</span>
+            <span *ngIf="f['email'].errors?.['emailOrPhone']">Please enter a valid email or phone number</span>
           </div>
         </div>
 

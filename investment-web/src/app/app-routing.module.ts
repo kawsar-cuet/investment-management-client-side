@@ -6,8 +6,12 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { GroupsListComponent } from './features/groups/groups-list.component';
+import { FamilyGroupListComponent } from './features/family-groups/family-group-list.component';
+import { FamilyGroupDetailsComponent } from './features/family-groups/family-group-details.component';
 import { FamiliesListComponent } from './features/families/families-list.component';
+import { FamilyDetailsComponent } from './features/families/family-details.component';
 import { MembersListComponent } from './features/members/members-list.component';
+import { MemberDetailsComponent } from './features/members/member-details.component';
 import { DepositsListComponent } from './features/deposits/deposits-list.component';
 import { ReportsComponent } from './features/reports/reports.component';
 import { SettingsComponent } from './features/settings/settings.component';
@@ -28,8 +32,12 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'groups', component: GroupsListComponent },
+      { path: 'family-groups', component: FamilyGroupListComponent },
+      { path: 'family-groups/:guid', component: FamilyGroupDetailsComponent },
       { path: 'families', component: FamiliesListComponent },
+      { path: 'families/:guid', component: FamilyDetailsComponent },
       { path: 'members', component: MembersListComponent },
+      { path: 'members/:guid', component: MemberDetailsComponent },
       { path: 'deposits', component: DepositsListComponent },
       { path: 'reports', component: ReportsComponent },
       { path: 'settings', component: SettingsComponent },

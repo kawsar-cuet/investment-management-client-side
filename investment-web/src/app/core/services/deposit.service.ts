@@ -6,7 +6,10 @@ import {
   DepositContainer,
   Deposit,
   CreateDepositRequest,
-  FamilyBulkDepositRequest
+  FamilyBulkDepositRequest,
+  FamilyBulkDepositPreview,
+  DepositSearchResult,
+  DepositSearchQuery
 } from '@core/models';
 
 function wrap(payload: Partial<Deposit>): { deposits_hdr: Partial<Deposit> } {
@@ -74,6 +77,13 @@ export class DepositService {
     );
   }
 
+  previewFamilyBulkDeposit(familyId: string, totalAmount: number): Observable<FamilyBulkDepositPreview> {
+    return this.apiService.get<FamilyBulkDepositPreview>(
+      `${this.endpoint}/family-bulk/preview`,
+      { familyId, totalAmount }
+    );
+  }
+
   update(id: string, payload: Partial<Deposit>): Observable<Deposit> {
     const body = wrap({ ...payload, guid: id } as any);
     return this.apiService.put<DepositContainer>(`${this.endpoint}/${id}`, body).pipe(
@@ -83,5 +93,32 @@ export class DepositService {
 
   delete(id: string): Observable<boolean> {
     return this.apiService.delete<boolean>(`${this.endpoint}/${id}`);
+  }
+
+  /**
+   * Keyword search across deposits. The server joins member + family +
+   * depositor names and applies case-insensitive LIKE on the supplied keyword.
+   */
+  search(query: DepositSearchQuery): Observable<DepositSearchResult[]> {
+    const params: Record<string, string | number> = {};
+    if (query.keyword && query.keyword.trim()) {
+      params['keyword'] = query.keyword.trim();
+    }
+    if (query.memberId) {
+      params['memberId'] = query.memberId;
+    }
+    if (query.familyId) {
+      params['familyId'] = query.familyId;
+    }
+    if (query.month != null && query.month > 0) {
+      params['month'] = query.month;
+    }
+    if (query.year != null && query.year > 0) {
+      params['year'] = query.year;
+    }
+    if (query.status) {
+      params['status'] = query.status;
+    }
+    return this.apiService.get<DepositSearchResult[]>(`${this.endpoint}/search`, params);
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FriendGroupService } from '@core/services/friend-group.service';
 import { FriendGroup } from '@core/models';
+import { extractHttpErrorMessage } from '@core/utils/http-error';
 
 @Component({
   selector: 'app-groups-list',
@@ -79,7 +80,7 @@ export class GroupsListComponent implements OnInit {
         this.createForm.reset();
         this.loadKnownGroups();
       },
-      error: err => (this.error = err?.message || err?.error?.message || 'Failed to create group')
+      error: err => (this.error = extractHttpErrorMessage(err, 'Failed to create group'))
     });
   }
 
@@ -117,7 +118,7 @@ export class GroupsListComponent implements OnInit {
         this.editForm.reset();
         this.loadKnownGroups();
       },
-      error: err => (this.error = err?.message || 'Failed to update group')
+      error: err => (this.error = extractHttpErrorMessage(err, 'Failed to update group'))
     });
   }
 

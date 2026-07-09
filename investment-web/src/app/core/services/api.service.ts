@@ -54,13 +54,21 @@ export class ApiService {
     if (env === null || env === undefined) {
       return env as T;
     }
-    // Check if it looks like an ApiEnvelope
-    if (typeof env === 'object' && env !== null && 'success' in (env as any)) {
-      const e = env as ApiEnvelope<T>;
-      if (e.success === false) {
-        throw new Error(e.message || 'API request failed');
+    // Check if it looks like an ApiEnvelope. Backend uses either:
+    //   - { success: boolean, data: T, ... }   (older envelope)
+    //   - { status: "success" | "error", data: T, ... }   (current envelope)
+    if (typeof env === 'object' && env !== null) {
+      const anyEnv = env as any;
+      const hasSuccessFlag = 'success' in anyEnv;
+      const hasStatusFlag = 'status' in anyEnv;
+      const isError = hasSuccessFlag && anyEnv.success === false;
+      const isExplicitError = hasStatusFlag && anyEnv.status === 'error';
+      if (isError || isExplicitError) {
+        throw new Error(anyEnv.message || 'API request failed');
       }
-      return (e.data !== undefined ? e.data : (env as T)) as T;
+      if (hasSuccessFlag || hasStatusFlag) {
+        return (anyEnv.data !== undefined ? anyEnv.data : env) as T;
+      }
     }
     return env as T;
   }
