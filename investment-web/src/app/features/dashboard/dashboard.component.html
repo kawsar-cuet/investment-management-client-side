@@ -186,7 +186,7 @@
   <div class="bg-white shadow-md rounded-lg border border-gray-200">
     <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
       <h2 class="text-base sm:text-lg font-heading font-semibold text-gray-900">Recent Deposits</h2>
-      <a routerLink="/deposits" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+      <a [routerLink]="['/deposits']" [queryParams]="{ tab: 'all' }" class="text-sm font-medium text-primary-600 hover:text-primary-500">
         View all →
       </a>
     </div>

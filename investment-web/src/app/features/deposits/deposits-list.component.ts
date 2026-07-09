@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -102,7 +103,8 @@ export class DepositsListComponent implements OnInit {
     private friendGroupService: FriendGroupService,
     private familyService: FamilyService,
     private memberService: MemberService,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -159,6 +161,13 @@ export class DepositsListComponent implements OnInit {
     const me = this.authService.getCurrentUser();
     this.isAdmin = (me?.role || '').toUpperCase() === 'ADMIN';
 
+    // Deep-link: /deposits?tab=all from dashboard "View all" → land on All Deposits tab.
+    // Non-admin users also default to 'all' since they have no other tabs.
+    const requestedTab = (this.route.snapshot.queryParamMap.get('tab') || '').toLowerCase();
+    if (requestedTab === 'all' || !this.isAdmin) {
+      this.activeTab = 'all';
+    }
+
     // All-Deposits search form
     this.searchForm = this.fb.group({
       keyword: [''],
@@ -167,11 +176,17 @@ export class DepositsListComponent implements OnInit {
       status: ['ACTIVE']
     });
 
-    // Auto-load with current month/year preselected so USER role still sees something useful
-    this.searchForm.patchValue({
-      month: today.getMonth() + 1,
-      year: currentYear
-    });
+    // Default filter values:
+    //   - ?tab=all deep-link ⇒ month='' and year='' (show everything)
+    //   - otherwise ⇒ current month + year so ADMINs land on something useful
+    if (requestedTab === 'all') {
+      this.searchForm.patchValue({ month: '', year: '' });
+    } else {
+      this.searchForm.patchValue({
+        month: today.getMonth() + 1,
+        year: currentYear
+      });
+    }
 
     // Debounced keyword search (300ms) so typing feels snappy but doesn't spam the API
     this.searchDebounceSub = this.searchForm.valueChanges
